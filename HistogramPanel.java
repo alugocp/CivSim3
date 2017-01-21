@@ -8,6 +8,7 @@ import java.awt.Font;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.awt.image.BufferedImage;
 
 public class HistogramPanel extends JPanel implements MouseListener{
 	static final long serialVersionUID=1;
@@ -15,6 +16,7 @@ public class HistogramPanel extends JPanel implements MouseListener{
 	static final int TRADE=1;
 	static final int ATTACK=2;
 	static final int BUILD=3;
+	private BufferedImage image;
 	private final Font font;
 	int[][] building={};
 	int action=NONE;
@@ -109,7 +111,7 @@ public class HistogramPanel extends JPanel implements MouseListener{
 	}
 	
 	// histogram drawing
-	ArrayList<Color> colors=new ArrayList<>();
+	//ArrayList<Color> colors=new ArrayList<>();
 	private ArrayList<int[][]> sizes=new ArrayList<>();
 	private int biggest=0;
 	private void drawHistogram(Graphics2D g){
@@ -118,18 +120,23 @@ public class HistogramPanel extends JPanel implements MouseListener{
 			int bottom=0;
 			for(int b=0;b<sizes.get(a).length;b++){
 				int[] data=sizes.get(a)[b];
-				g.setColor(colors.get(data[1]));
+				//g.setColor(colors.get(data[1]));
+				g.setColor(new Color(data[1]));
 				g.fillRect(a,biggest-bottom-data[0],1,data[0]);
 				bottom+=data[0];
 			}
 		}
+		g.drawImage(image,0,0,getWidth(),getHeight(),null);
 	}
 	public void logHistogramData(){
-		int[][] data=new int[Game.leaders.size()][2];
+		int[][] data=new int[Game.enemies.size()+1][2];
 		int totalCities=0;
-		for(int a=0;a<data.length;a++){
-			data[a][0]=Game.leaders.get(a).cities.size();
-			data[a][1]=colors.indexOf(Game.leaders.get(a).color);
+		data[0][0]=Game.player.cities.size();
+		data[0][1]=Game.player.color.getRGB();
+		totalCities+=data[0][0];
+		for(int a=1;a<data.length;a++){
+			data[a][0]=Game.enemies.get(a-1).cities.size();//Game.leaders.get(a).cities.size();
+			data[a][1]=Game.enemies.get(a-1).color.getRGB();//colors.indexOf(Game.leaders.get(a).color);
 			totalCities+=data[a][0];
 		}
 		if(totalCities>biggest){

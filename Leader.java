@@ -16,7 +16,7 @@ public abstract class Leader {
 		this.y=y;
 		color=getColor();
 		new City(this,x,y);
-		Game.leaders.add(this);
+		//Game.leaders.add(this);
 	}
 	public Leader(City city){
 		id=currentId;
@@ -24,9 +24,8 @@ public abstract class Leader {
 		this.x=city.x;
 		this.y=city.y;
 		color=getColor();
-		Game.leaders.add(Game.leaders.indexOf(city.leader),this);
-		city.changeLeader(this);
-		Game.histo.colors.add(color);
+		//Game.leaders.add(Game.leaders.indexOf(city.leader),this);
+		//Game.histo.colors.add(color);
 	}
 	private Color getColor(){
 		int red=(47*id)+(x/2);
@@ -38,20 +37,27 @@ public abstract class Leader {
 	}
 	public abstract void turn();
 	protected void developCities(){
-		for(int a=0;a<cities.size();a++){
-			City city=cities.get(a);
-			for(int b=0;b<city.neighbors.size();b++){
-				if(city.neighbors.get(b).leader!=this && closeEnoughSize(city.neighbors.get(b).leader)){
-					merge(city.neighbors.get(b).leader);
-					//break;
+		ArrayList<City> c=new ArrayList<>();
+		c.addAll(cities);
+		for(int a=0;a<c.size();a++){
+			City city=c.get(a);
+			if(city.leader==this){
+				city.removeChaos();
+				if(!city.isDead()){
+					for(int b=0;b<city.neighbors.size();b++){
+						if(city.neighbors.get(b).leader!=this && closeEnoughSize(city.neighbors.get(b).leader)){
+							merge(city.neighbors.get(b).leader);
+						}
+					}
+					city.actionable=true;
+					city.appeased=first;
+					if(first){
+						first=false;
+					}
+					city.procreate();
+					city.advanceSkill();
 				}
 			}
-			city.appeased=first;
-			if(first){
-				first=false;
-			}
-			city.procreate();
-			city.advanceSkill();
 		}
 		Game.redraw(true,Game.histo.focus!=null,false,false);
 	}
@@ -60,10 +66,14 @@ public abstract class Leader {
 		return diff<=Math.ceil(cities.size()*0.05) || diff<=Math.ceil(leader.cities.size()*0.05);
 	}
 	public void periodOfWarringStates(City rebel){
-		int n=(int)Math.ceil(cities.size()/10.0);
-		if(n==0){
-			n++;
+		City cap=Game.world.get(rebel.leader.x,rebel.leader.y).city;
+		if(cap==null || cap.leader!=rebel.leader){
+			System.out.println("No capital for rebel!");
 		}
+		if(cities.size()==0){
+			return;
+		}
+		int n=(int)Math.ceil(cities.size()/10.0);
 		City[] capitals=new City[n];
 		capitals[0]=rebel;
 		for(int a=1;a<n;a++){
@@ -71,8 +81,11 @@ public abstract class Leader {
 			capitals[a]=cities.get(c);
 			new Enemy(cities.get(c));
 		}
-		while(cities.size()>0){
-			City c=cities.get(0);
+		ArrayList <City> cityList=new ArrayList<>();
+		cityList.addAll(cities);
+		cityList.remove(rebel);
+		while(cityList.size()>0){
+			City c=cityList.get(0);
 			int[] cCoords=Game.world.getCoords(c.x,c.y);
 			double distance=Game.distance(cCoords,Game.world.getCoords(capitals[0].x,capitals[0].y));
 			int index=0;
@@ -84,11 +97,15 @@ public abstract class Leader {
 				}
 			}
 			c.changeLeader(capitals[index].leader);
+			cityList.remove(c);
 		}
 	}
 	public void merge(Leader leader){
-		for(int a=0;a<leader.cities.size();a++){
+		/*for(int a=0;a<leader.cities.size();a++){
 			leader.cities.get(a).changeLeader(this);
+		}*/
+		while(leader.cities.size()>0){
+			leader.cities.get(0).changeLeader(this);
 		}
 	}
 }

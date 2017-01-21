@@ -14,7 +14,7 @@ public class City {
 	private int age;
 	int[][] territories;
 	Leader leader;
-	boolean appeased=false;
+	boolean appeased=false,actionable=false;
 	public City(Leader leader,int x,int y){
 		this.leader=leader;
 		this.x=x;
@@ -23,7 +23,7 @@ public class City {
 		loyalty=MAX_LOYALTY;
 		Tile tile=Game.world.get(x,y);
 		tile.city=this;
-		tile.resource=null;
+		//tile.resource=null;
 		leader.cities.add(this);
 		culture.setName(this);
 	}
@@ -166,7 +166,7 @@ public class City {
 			loyalty=0;
 		}
 	}
-	private void destroy(){
+	public void destroy(){
 		for(int a=0;a<territories.length;a++){
 			Game.world.get(territories[a][0],territories[a][1]).territory=null;
 		}
@@ -179,6 +179,10 @@ public class City {
 		for(int a=0;a<neighbors.size();a++){
 			neighbors.get(a).neighbors.remove(this);
 		}
+		age=-1;
+	}
+	public boolean isDead(){
+		return age==-1;
 	}
 	private boolean inWorld(int x,int y){
 		return (x>=0 && y>=0 && x<Game.world.width && y<Game.world.height);
@@ -192,6 +196,23 @@ public class City {
 	}
 	
 	// per-turn
+	public void removeChaos(){
+		if(neighbors.size()==0){
+			return;
+		}
+		for(int a=0;a<neighbors.size();a++){
+			if(neighbors.get(a).leader==leader){
+				return;
+			}
+		}
+		destroy();
+		if(leader.x==x && leader.y==y && leader.cities.size()>0){
+			int index=(int)Math.floor(Math.random()*leader.cities.size());
+			City capital=leader.cities.get(index);
+			new Enemy(capital);
+			leader.periodOfWarringStates(capital);
+		}
+	}
 	public void procreate(){
 		pop+=10;//(int)Math.ceil(pop/10.0)*(food-1);
 		if(pop>300){
@@ -236,26 +257,26 @@ public class City {
 	// affiliation/territory
 	private void rebel(){
 		Leader past=leader;
-		Leader leader=new Enemy(this);
-		if(past.x==x && past.y==y){
-			if(past.cities.size()>0){
-				past.periodOfWarringStates(this);
-			}
-		}else if(past.cities.size()>0){
-			//ArrayList<City> bordering=bordering();
-			City capital=Game.world.get(past.x,past.y).city;
-			if(neighbors.contains(capital)){
+		new Enemy(this);
+		if(past.cities.size()>0){
+			if(past.x==x && past.y==y){
 				past.periodOfWarringStates(this);
 			}else{
-				for(int a=0;a<neighbors.size();a++){
-					if(neighbors.get(a).leader==past){
-						neighbors.get(a).changeLeader(leader);
+				City capital=Game.world.get(past.x,past.y).city;
+				if(neighbors.contains(capital)){
+					past.periodOfWarringStates(this);
+				}else{
+					for(int a=0;a<neighbors.size();a++){
+						if(neighbors.get(a).leader==past){
+							neighbors.get(a).changeLeader(leader);
+						}
 					}
 				}
 			}
 		}
 		if(leader.cities.size()==1){
 			destroy();
+			//Game.enemies.remove(leader);
 		}
 	}
 	public Color getColor(){
@@ -280,7 +301,9 @@ public class City {
 				Tile t=Game.world.get(s[b][0],s[b][1]);
 				if(t.territory!=null){
 					City c=Game.world.get(t.territory[0],t.territory[1]).city;
-					if(c!=this && !neighbors.contains(c)){
+					if(c==null){
+						t.territory=null;
+					}else if(c!=this && !neighbors.contains(c)){
 						neighbors.add(c);
 						c.neighbors.add(this);
 					}

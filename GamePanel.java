@@ -39,7 +39,7 @@ public class GamePanel extends JPanel implements MouseListener,MouseMotionListen
 					g.fillPolygon(hex);
 					g.setColor(Color.BLACK);
 					String resource=Game.world.get(x,y).resource;
-					if(resource!=null){
+					if(resource!=null && Game.world.get(x, y).city==null){
 						g.drawString(resource,-Game.xDisHalf(),0);
 					}
 					if(Game.world.get(x,y).city!=null){
@@ -103,7 +103,9 @@ public class GamePanel extends JPanel implements MouseListener,MouseMotionListen
 			return tile.city.getColor();
 		}else if(tile.territory!=null){
 			City territory=Game.world.get(tile.territory[0],tile.territory[1]).city;
-			if(territory==Game.histo.focus){
+			if(territory==null){
+				tile.territory=null;
+			}else if(territory==Game.histo.focus){
 				return territory.getTerritoryColor();
 			}
 		}
@@ -132,7 +134,9 @@ public class GamePanel extends JPanel implements MouseListener,MouseMotionListen
 		}
 		/*repaint();
 		Game.mini.repaint();*/
-		Game.redraw(true,false,false,false);
+		if(Game.mode==Game.PLAYER){
+			Game.redraw(true,false,false,false);
+		}
 	}
 	public void scrollTo(int x,int y){
 		scroll(-scroll[0]+x,-scroll[1]+y);

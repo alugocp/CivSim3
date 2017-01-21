@@ -19,15 +19,12 @@ public class World extends Hex2DArray{
 		generate();
 		terraform();
 		Player.newPlayer();
-		for(int a=0;a<Game.leaders.size();a++){
-			for(int b=0;b<Game.leaders.get(a).cities.size();b++){
-				//City city=Game.leaders.get(a).cities.get(b);
-				Game.leaders.get(a).cities.get(b).setTerritories();
-				/*for(int c=0;c<city.territories.length;c++){
-					get(city.territories[c][0],city.territories[c][1]).territory=new int[]{city.x,city.y};
-				}*/
+		for(int a=0;a<Game.enemies.size();a++){
+			for(int b=0;b<Game.enemies.get(a).cities.size();b++){
+				Game.enemies.get(a).cities.get(b).setTerritories();
 			}
 		}
+		Game.player.cities.get(0).setTerritories();
 	}
 	private void generate(){
 		final int[][] seeds=new int[200][3];
@@ -156,7 +153,12 @@ public class World extends Hex2DArray{
 		if(tile.city!=null){
 			return tile.city.getColor();
 		}else if(tile.territory!=null){
-			return get(tile.territory[0],tile.territory[1]).city.getColor();
+			City c=get(tile.territory[0],tile.territory[1]).city;
+			if(c==null){
+				tile.territory=null;
+			}else{
+				return c.getColor();
+			}
 		}
 		return environmentColor(tile.environment);
 	}

@@ -5,26 +5,61 @@ public class Enemy extends Leader{
 	public Enemy(int x,int y){
 		super(x,y);
 		Game.enemies.add(this);
+		randomBrain();
 	}
 	public Enemy(City city){
 		super(city);
-		Game.enemies.add(this);
+		//Game.enemies.add(this);
+		int i=Game.enemies.indexOf(city.leader);
+		if(i==-1){
+			i=0;
+		}
+		Game.enemies.add(i,this);
+		
+		city.changeLeader(this);
+		randomBrain();
 	}
 	@Override
 	public void turn(){
-		developCities();
-		think();
+		City capital=Game.world.get(x,y).city;
+		if(capital==null || capital.leader!=this){
+			if(cities.size()>0){
+				System.out.println("No capital ("+cities.size()+")");
+				while(cities.size()>0){
+					cities.get(0).destroy();
+				}
+			}
+		}else{
+			developCities();
+			think();
+		}
 	}
 	
 	// AI
 	// [event type][inputs][value][output]
-	private int[][][][] brain={
+	private int[][][][] brain;/*={
 		{{{-2,2,2,-1},{0,1,2,-1},{2,0,0,0}},{{0,2,0,-2},{0,0,0,0},{0,0,0,0}},{{-2,2,-1,1},{1,1,0,1},{2,0,1,0}},{{2,0,0,-1},{1,0,0,1},{-2,1,0,1}}},
 		{{{2,2,2,-2},{1,1,2,-1},{0,1,0,0}},{{0,0,0,0},{0,0,0,0},{0,0,0,0}},{{2,1,-1,-1},{1,1,0,0},{0,2,1,-1}},{{-2,2,0,1},{-1,1,0,0},{2,1,0,-1}},{{1,-1,2,2},{-2,2,0,-2}}},
 		{{{1,1},{1,1},{1,1}},{{-2,2},{-1,1},{2,0}}}
-	};
+	};*/
+	public void randomBrain(){
+		brain=new int[3][][][];
+		brain[0]=new int[4][3][4];
+		brain[1]=new int[5][3][4];
+		brain[1][4]=new int[2][4];
+		brain[2]=new int[2][3][2];
+		for(int a=0;a<brain.length;a++){
+			for(int b=0;b<brain[a].length;b++){
+				for(int c=0;c<brain[a][b].length;c++){
+					for(int d=0;d<brain[a][b][c].length;d++){
+						brain[a][b][c][d]=(int)Math.round(Math.random()*4)-2;
+					}
+				}
+			}
+		}
+	}
 	private void think(){
-		borderingEnemies();// fucked up
+		borderingEnemies();
 		cityWantsResources();
 		whenever();
 	}
@@ -97,15 +132,17 @@ public class Enemy extends Leader{
 	private void whenever(){
 		for(int a=0;a<cities.size();a++){
 			City city=cities.get(a);
-			String senses="2";
-			senses+=generalLoyalty(city);
-			senses+=generalPop(city);
-			int action=neuralNetAlg(senses);
-			if(action==0){
-				int[][] spots=city.buildingSpots();
-				if(spots.length>0 && city.pop>25){
-					int i=(int)Math.floor(Math.random()*spots.length);
-					new City(city,spots[i][0],spots[i][1]);
+			if(city.actionable){
+				String senses="2";
+				senses+=generalLoyalty(city);
+				senses+=generalPop(city);
+				int action=neuralNetAlg(senses);
+				if(action==0){
+					int[][] spots=city.buildingSpots();
+					if(spots.length>0 && city.pop>25){
+						int i=(int)Math.floor(Math.random()*spots.length);
+						new City(city,spots[i][0],spots[i][1]);
+					}
 				}
 			}
 		}
@@ -143,9 +180,11 @@ public class Enemy extends Leader{
 		ArrayList<City[]> neighbors=new ArrayList<>();
 		for(int a=0;a<cities.size();a++){
 			City city=cities.get(a);
-			for(int b=0;b<city.neighbors.size();b++){
-				if(city.leader!=city.neighbors.get(b).leader){
-					neighbors.add(new City[]{city,city.neighbors.get(b)});
+			if(city.actionable){
+				for(int b=0;b<city.neighbors.size();b++){
+					if(city.leader!=city.neighbors.get(b).leader){
+						neighbors.add(new City[]{city,city.neighbors.get(b)});
+					}
 				}
 			}
 		}
@@ -155,8 +194,10 @@ public class Enemy extends Leader{
 		ArrayList<CityWant> wants=new ArrayList<>();
 		for(int a=0;a<cities.size();a++){
 			City city=cities.get(a);
-			for(int b=0;b<city.wants.size();b++){
-				wants.add(new CityWant(city,city.wants.get(b)));
+			if(city.actionable){
+				for(int b=0;b<city.wants.size();b++){
+					wants.add(new CityWant(city,city.wants.get(b)));
+				}
 			}
 		}
 		return wants.toArray(new CityWant[wants.size()]);
