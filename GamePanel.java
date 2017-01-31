@@ -38,22 +38,21 @@ public class GamePanel extends JPanel implements MouseListener,MouseMotionListen
 					g.translate(c[0],c[1]);
 					g.fillPolygon(hex);
 					g.setColor(Color.BLACK);
-					String resource=Game.world.get(x,y).resource;
-					if(resource!=null && Game.world.get(x, y).city==null){
-						g.drawString(resource,-Game.xDisHalf(),0);
+					Tile tile=Game.world.get(x, y);
+					if(Game.mode==Game.PLAYER && tile.resource!=-1 && tile.city==null){
+						g.drawString(Tile.resources[tile.resource],-Game.xDisHalf(),0);
 					}
-					if(Game.world.get(x,y).city!=null){
-						City city=Game.world.get(x,y).city;
-						if(x==city.leader.x && y==city.leader.y){
+					if(tile.city!=null){
+						if(x==tile.city.leader.x && y==tile.city.leader.y){
 							int radius=(3*Game.xDisHalf())/4;
 							g.fillOval(-radius,-radius,radius*2,radius*2);
 							g.setColor(Color.WHITE);
 						}
-						if(city.interest!=null && city.wants.size()>0){
+						if(tile.city.interest!=null && tile.city.wants!=null && tile.city.wanted>0){
 							g.drawString("!",0,0);
 						}
 						g.setColor(highlighted);
-						if((Game.histo.action==HistogramPanel.ATTACK || Game.histo.action==HistogramPanel.TRADE) && Game.histo.focus.neighbors.contains(city)){
+						if((Game.histo.action==HistogramPanel.ATTACK || Game.histo.action==HistogramPanel.TRADE) && Game.histo.focus.neighbors.contains(tile.city)){
 							g.fillPolygon(hex);
 						}
 					}
@@ -80,7 +79,7 @@ public class GamePanel extends JPanel implements MouseListener,MouseMotionListen
 	public void updateWants(){
 		wants=0;
 		for(int a=0;a<Game.player.cities.size();a++){
-			if(Game.player.cities.get(a).interest!=null && Game.player.cities.get(a).wants.size()>0){
+			if(Game.player.cities.get(a).wanted>0){
 				wants++;
 			}
 		}
@@ -134,7 +133,7 @@ public class GamePanel extends JPanel implements MouseListener,MouseMotionListen
 		}
 		/*repaint();
 		Game.mini.repaint();*/
-		if(Game.mode==Game.PLAYER){
+		if(Game.finished || Game.mode==Game.PLAYER){
 			Game.redraw(true,false,false,false);
 		}
 	}

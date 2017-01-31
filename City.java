@@ -4,13 +4,14 @@ import java.util.ArrayList;
 
 public class City {
 	static final int MAX_LOYALTY=5;
-	int x,y,pop,loyalty;
-	private ArrayList<String> tradedResources=new ArrayList<>();
+	int x,y,pop,loyalty,wanted;
+	//private ArrayList<String> tradedResources=new ArrayList<>();
 	ArrayList<City> neighbors=new ArrayList<>();
-	ArrayList<String> wants=new ArrayList<>();
 	Culture culture=new Culture();
 	String name;
-	String[] interest,resources;
+	String[] interest;//,resources;
+	boolean[] resources=new boolean[Tile.resources.length];
+	boolean[] wants=new boolean[Tile.resources.length];
 	private int age;
 	int[][] territories;
 	Leader leader;
@@ -58,28 +59,11 @@ public class City {
 		}
 		pop-=15;
 	}
-	/*public ArrayList<City> bordering(){
-		ArrayList<City> bordering=new ArrayList<>();
-		for(int a=0;a<territories.length;a++){
-			int[][] t=surrounding(territories[a][0],territories[a][1]);
-			for(int b=0;b<t.length;b++){
-				Tile tile=Game.world.get(t[b][0],t[b][1]);
-				City city=tile.city;
-				if(city==null && tile.territory!=null){
-					city=Game.world.get(tile.territory[0],tile.territory[1]).city;
-				}
-				if(city!=null && city!=this && !bordering.contains(city)){
-					bordering.add(city);
-				}
-			}
-		}
-		return neighbors;
-	}*/
 	public int[][] buildingSpots(){
 		ArrayList<int[]> building=new ArrayList<>();
 		ArrayList<int[]> water=new ArrayList<>();
 		for(int a=0;a<territories.length;a++){
-			int[][] s=surrounding(territories[a][0],territories[a][1]);
+			int[][] s=Tile.surroundings(territories[a][0],territories[a][1]);
 			for(int b=0;b<s.length;b++){
 				Tile tile=Game.world.get(s[b][0],s[b][1]);
 				if(tile.environment==World.WATER){
@@ -99,11 +83,11 @@ public class City {
 			int[] diff=new int[]{water.get(a)[0]-x,water.get(a)[1]-y};
 			int newX=x+(diff[0]*2);
 			int newY=y+(diff[1]*2);
-			while(inWorld(newX,newY) && Game.world.get(newX,newY).environment==World.WATER){
+			while(Tile.inWorld(newX,newY) && Game.world.get(newX,newY).environment==World.WATER){
 				newX+=diff[0];
 				newY+=diff[1];
 			}
-			if(inWorld(newX,newY)){
+			if(Tile.inWorld(newX,newY)){
 				Tile tile=Game.world.get(newX, newY);
 				if(tile.city==null && tile.territory==null){
 					building.add(new int[]{newX,newY});
@@ -122,33 +106,42 @@ public class City {
 	}
 	
 	// resources
-	private ArrayList<String> wants(){
-		ArrayList<String> w=new ArrayList<>();
+	private void setWants(){
+		//ArrayList<Integer> w=new ArrayList<>();
+		wanted=0;
+		wants=new boolean[Tile.resources.length];
 		if(interest!=null){
+			//System.out.println(interest[interest.length-1]);
 			for(int a=1;a<interest.length;a++){
 				if(!hasResource(interest[a])){
-					w.add(interest[a]);
+					//w.add(Integer.parseInt(interest[a]));
+					wants[Integer.parseInt(interest[a])]=true;
+					wanted++;
 				}
 			}
 		}
-		return w;
+		//return w;
 	}
-	public boolean hasResource(String res){
-		for(int a=0;a<resources.length;a++){
+	public boolean hasResource(int res){
+		/*for(int a=0;a<resources.length;a++){
 			if(resources[a].equals(res)){
 				return true;
 			}
 		}
-		return tradedResources.contains(res);//false;
+		return tradedResources.contains(res);//false;*/
+		return resources[res];
 	}
-	/*public void giveResource(String res){
-		if(tradedResources.contains(res)){
-			tradedResources.remove(res);
+	private boolean hasResource(String res){
+		return hasResource(Integer.parseInt(res));
+	}
+	public void getResource(int res){
+		//tradedResources.add(res);
+		resources[res]=true;
+		if(wants[res]){
+			wants[res]=false;
+			wanted--;
 		}
-	}*/
-	public void getResource(String res){
-		tradedResources.add(res);
-		wants.remove(res);
+		//wants.remove(res);
 	}
 	
 	// under-the-hood
@@ -183,9 +176,6 @@ public class City {
 	}
 	public boolean isDead(){
 		return age==-1;
-	}
-	private boolean inWorld(int x,int y){
-		return (x>=0 && y>=0 && x<Game.world.width && y<Game.world.height);
 	}
 	private int randomEnviron(){
 		if(territories.length==0){
@@ -242,16 +232,17 @@ public class City {
 			}
 			culture.upgrade(interest[0]);
 			interest=null;
-			wants.clear();
+			//wants.clear();
+			wants=new boolean[Tile.resources.length];
 		}
 	}
 	private void setNewInterest(){
-		if(culture.skills.size()<=Math.ceil(Culture.MAX_SKILLS/2)){
+		//if(culture.skills.size()<=Math.ceil(Culture.MAX_SKILLS/2)){
 			interest=Game.skills.getSkill(randomEnviron());
-		}else{
+		/*}else{
 			interest=Game.skills.randomSkill();
-		}
-		wants=wants();
+		}*/
+		setWants();
 	}
 	
 	// affiliation/territory
@@ -287,16 +278,16 @@ public class City {
 		return new Color(color.getRed(),color.getGreen(),color.getBlue(),127);
 	}
 	public void setTerritories(){
-		//Game.world.get(x, y).resource=null;
 		territories=territories(x,y);
-		ArrayList<String> r=new ArrayList<>();
+		//ArrayList<String> r=new ArrayList<>();
 		for(int a=0;a<territories.length;a++){
 			Tile tile=Game.world.get(territories[a][0],territories[a][1]);
 			tile.territory=new int[]{x,y};
-			if(tile.resource!=null){
-				r.add(tile.resource);
+			if(tile.resource!=-1){
+				//r.add(tile.resource);
+				getResource(tile.resource);
 			}
-			int[][] s=surrounding(territories[a][0],territories[a][1]);
+			int[][] s=Tile.surroundings(territories[a][0],territories[a][1]);
 			for(int b=0;b<s.length;b++){
 				Tile t=Game.world.get(s[b][0],s[b][1]);
 				if(t.territory!=null){
@@ -310,56 +301,15 @@ public class City {
 				}
 			}
 		}
-		resources=r.toArray(new String[r.size()]);
+		//resources=r.toArray(new String[r.size()]);
 		interest=Game.skills.getSkill(randomEnviron());
-		wants=wants();
+		setWants();
 	}
 	private int[][] territories(int x,int y){
-		ArrayList<int[]> points=new ArrayList<>();
-		for(int ox=-1;ox<=1;ox++){
-			for(int oy=-2;oy<=2;oy++){
-				points.add(new int[]{x+ox,y+oy});
-			}
-		}
-		points.add(new int[]{x-2,y});
-		points.add(new int[]{x+2,y});
-		int side=2;
-		if(y%2==0){
-			side*=-1;
-		}
-		points.add(new int[]{x+side,y-1});
-		points.add(new int[]{x+side,y+1});
+		ArrayList<int[]> points=Tile.twoTileSurroundings(x,y);
 		for(int a=0;a<points.size();a++){
-			int[] p=points.get(a);
-			if(p[0]<0 || p[1]<0 || p[0]>=Game.world.width || p[1]>=Game.world.height/* || (p[0]==x && p[1]==y)*/){
-				points.remove(a);
-				a--;
-			}else{
-				Tile tile=Game.world.get(p[0],p[1]);
-				if(tile.city!=null || tile.territory!=null || tile.environment==World.WATER){
-					points.remove(a);
-					a--;
-				}
-			}
-		}
-		return points.toArray(new int[points.size()][2]);
-	}
-	private int[][] surrounding(int x,int y){
-		ArrayList<int[]> points=new ArrayList<>();
-		points.add(new int[]{x+1,y});
-		points.add(new int[]{x-1,y});
-		points.add(new int[]{x,y+1});
-		points.add(new int[]{x,y-1});
-		if(y%2==0){
-			points.add(new int[]{x-1,y-1});
-			points.add(new int[]{x-1,y+1});
-		}else{
-			points.add(new int[]{x+1,y-1});
-			points.add(new int[]{x+1,y+1});
-		}
-		for(int a=0;a<points.size();a++){
-			int[] p=points.get(a);
-			if(!inWorld(p[0],p[1]) || (p[0]==x && p[1]==y)){
+			Tile tile=Game.world.get(points.get(a)[0],points.get(a)[1]);
+			if(tile.city!=null || tile.territory!=null || tile.environment==World.WATER){
 				points.remove(a);
 				a--;
 			}

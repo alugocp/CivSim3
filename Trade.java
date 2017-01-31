@@ -3,13 +3,13 @@ import java.util.ArrayList;
 
 public class Trade {
 	City city,city1;
-	String[] offers,offers1;
+	Integer[] offers,offers1;
 	int selected,selected1;
 	public Trade(City city,City city1){
 		this.city=city;
 		this.city1=city1;
-		offers=available(city1.wants,city);
-		offers1=available(city.wants,city1);
+		offers=available(city1.wants,city1.wanted,city);
+		offers1=available(city.wants,city.wanted,city1);
 	}
 	public boolean possible(){
 		return offers.length>0 && offers1.length>0;
@@ -18,28 +18,30 @@ public class Trade {
 		selected=(int)Math.floor(Math.random()*offers.length);
 		selected1=(int)Math.floor(Math.random()*offers1.length);
 	}
-	public void preferFirstOffer(String resource){
+	public void preferFirstOffer(int resource){
 		for(int a=0;a<offers.length;a++){
-			if(offers[a].equals(resource)){
+			if(offers[a]==resource){
 				selected=a;
 				return;
 			}
 		}
 	}
 	public void trade(){
-		if(offers1[selected1]=="People"){
+		int item=offers[selected];
+		int item1=offers1[selected1];
+		if(item1==-1){
 			city.pop+=10;
 			city1.pop-=10;
 		}else{
-			city.getResource(offers1[selected1]);
+			city.getResource(item1);
 		}
-		if(offers[selected]=="People"){
+		if(item==-1){
 			city1.pop+=10;
 			city.pop-=10;
 		}else{
-			city1.getResource(offers[selected]);
+			city1.getResource(item);
 		}
-		if(offers[selected]!="People"){
+		if(item!=-1){
 			if(city.leader==city1.leader){
 				city1.changeLoyalty(1);
 			}else{
@@ -57,24 +59,30 @@ public class Trade {
 		city.culture.merge(city.pop,city1.culture,city1.pop);
 		Game.game.updateWants();
 	}
-	private String[] available(ArrayList<String> wants,City partner){
-		ArrayList<String> w=new ArrayList<String>();
+	private Integer[] available(boolean[] wants,int wanted,City partner){
+		ArrayList<Integer> w=new ArrayList<>();
 		if(partner.pop>10){
-			w.add("People");
+			w.add(-1);
 		}
-		if(wants.size()==0 && city.leader==city1.leader){
+		if(wanted==0 && city.leader==city1.leader){
 			for(int a=0;a<partner.resources.length;a++){
-				if(!w.contains(partner.resources[a])){
+				/*if(!w.contains(partner.resources[a])){
 					w.add(partner.resources[a]);
+				}*/
+				if(partner.resources[a]){
+					w.add(a);
 				}
 			}
-			return w.toArray(new String[w.size()]);
+			return w.toArray(new Integer[w.size()]);
 		}
-		for(int a=0;a<wants.size();a++){
-			if(!w.contains(wants.get(a)) && partner.hasResource(wants.get(a))){
-				w.add(wants.get(a));
+		for(int a=0;a<wants.length;a++){
+			if(wants[a] && partner.hasResource(a)){
+				w.add(a);
 			}
+			/*if(!w.contains(wants.get(a)) && partner.hasResource(wants.get(a))){
+				w.add(wants.get(a));
+			}*/
 		}
-		return w.toArray(new String[w.size()]);
+		return w.toArray(new Integer[w.size()]);
 	}
 }

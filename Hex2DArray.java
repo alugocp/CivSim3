@@ -13,9 +13,6 @@ public class Hex2DArray{
 	}
 	
 	// basic array stuff
-	/*public Tile[] get(int index){
-		return array[index];
-	}*/
 	public Tile get(int x,int y){
 		return array[x][y];
 	}

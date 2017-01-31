@@ -13,12 +13,14 @@ public abstract class Game{
 	static MinimapPanel mini;
 	static HistogramPanel histo;
 	static CulturePanel culture;
+	static boolean finished=false;
 	static final int PLAYER=-1;
 	static final int SIM=0;
 	static int mode=PLAYER;
 	static int turn;
 	private static int t=0;
 	public static void main(String[] args){
+		//Tile.setupResources();
 		world=new World();
 		world.setup();
 		new MainFrame(1200,600);
@@ -76,7 +78,7 @@ public abstract class Game{
 	}
 	public static void simCycle(){
 		mode=SIM;
-		while(t<100){
+		while(t<50){//100
 			System.out.println("Year "+t);
 			enemyTurn();
 			histo.logHistogramData();
@@ -90,6 +92,7 @@ public abstract class Game{
 			}
 		}
 		System.out.println("All done!");
-		mode=PLAYER;
+		finished=true;
+		//mode=PLAYER;
 	}
 }

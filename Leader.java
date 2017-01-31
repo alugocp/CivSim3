@@ -28,9 +28,9 @@ public abstract class Leader {
 		//Game.histo.colors.add(color);
 	}
 	private Color getColor(){
-		int red=(47*id)+(x/2);
-		int green=(int)Math.pow(id,3)+y;
-		int blue=(120+x+y)*id;
+		int red=(47*(id+y))+(x/2);
+		int green=(x+y)*(int)(id/2.0);
+		int blue=(22+x+id)*y;
 		float[] hsb=new float[3];
 		hsb=Color.RGBtoHSB(red%255,green%255,blue%255,hsb);
 		return Color.getHSBColor(hsb[0],hsb[1],hsb[2]);

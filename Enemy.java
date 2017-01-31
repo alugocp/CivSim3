@@ -195,17 +195,19 @@ public class Enemy extends Leader{
 		for(int a=0;a<cities.size();a++){
 			City city=cities.get(a);
 			if(city.actionable){
-				for(int b=0;b<city.wants.size();b++){
-					wants.add(new CityWant(city,city.wants.get(b)));
+				for(int b=0;b<city.wants.length;b++){
+					if(city.wants[b]){
+						wants.add(new CityWant(city,b));
+					}
 				}
 			}
 		}
 		return wants.toArray(new CityWant[wants.size()]);
 	}
 	private class CityWant{
-		String resource;
+		int resource;
 		City city;
-		public CityWant(City city,String resource){
+		public CityWant(City city,int resource){
 			this.resource=resource;
 			this.city=city;
 		}
@@ -228,7 +230,7 @@ public class Enemy extends Leader{
 		}
 		return '0';
 	}
-	private char hasResource(City city,String resource){
+	private char hasResource(City city,int resource){
 		if(city.hasResource(resource)){
 			return '1';
 		}

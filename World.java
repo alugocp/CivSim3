@@ -12,7 +12,7 @@ public class World extends Hex2DArray{
 	static final int COAST=6;
 	private final Random r=new Random();
 	public World(){
-		super(240,120);
+		super(160,90);//240,120
 		setDimensions(0,0,Game.xDis(),Game.yDis());
 	}
 	public void setup(){
@@ -65,25 +65,25 @@ public class World extends Hex2DArray{
 						}
 						if(x>0 && !isLand(x-1,y)){
 							get(x-1,y).environment=COAST;
-							if(get(x-1,y).resource!=null || Math.random()<0.5){
+							if(get(x-1,y).resource!=-1 || Math.random()<0.5){
 								get(x-1,y).resource=Tile.resource(COAST);
 							}
 						}
 						if(y>0 && !isLand(x,y-1)){
 							get(x,y-1).environment=COAST;
-							if(get(x,y-1).resource!=null || Math.random()<0.5){
+							if(get(x,y-1).resource!=-1 || Math.random()<0.5){
 								get(x,y-1).resource=Tile.resource(COAST);
 							}
 						}
 						if(x>0 && y>0 && y%2==0 && !isLand(x-1,y-1)){
 							get(x-1,y-1).environment=COAST;
-							if(get(x-1,y-1).resource!=null || Math.random()<0.5){
+							if(get(x-1,y-1).resource!=-1 || Math.random()<0.5){
 								get(x-1,y-1).resource=Tile.resource(COAST);
 							}
 						}
 						if(x<width-1 && y>0 && y%2==1 && !isLand(x+1,y-1)){
 							get(x+1,y-1).environment=COAST;
-							if(get(x+1,y-1).resource!=null || Math.random()<0.5){
+							if(get(x+1,y-1).resource!=-1 || Math.random()<0.5){
 								get(x+1,y-1).resource=Tile.resource(COAST);
 							}
 						}
@@ -117,7 +117,7 @@ public class World extends Hex2DArray{
 		Tile t=get(x,y);
 		if(t.environment==GRASS){
 			t.environment=type;
-			if(t.resource!=null){
+			if(t.resource!=-1){
 				t.resource=Tile.resource(type);
 			}
 		}
@@ -133,7 +133,7 @@ public class World extends Hex2DArray{
 			Tile tile=get(adj[a][0],adj[a][1]);
 			if(tile.environment==GRASS && r.nextInt(10)<10-index){
 				tile.environment=type;
-				if(tile.resource!=null){
+				if(tile.resource!=-1){
 					tile.resource=Tile.resource(type);
 				}
 			}

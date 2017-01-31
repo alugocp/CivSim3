@@ -60,11 +60,21 @@ public class HistogramPanel extends JPanel implements MouseListener{
 		g.drawString("Loyalty:",5,90);
 		g.drawString(focus.loyalty+"/"+City.MAX_LOYALTY,105,90);
 		if(focus.interest!=null && action!=TRADE){
-			if(focus.wants.size()>0){
-				String w="Wants: "+focus.wants.get(0);
+			if(focus.wanted>0){
+				String w="";
+				for(int a=0;a<focus.wants.length;a++){
+					if(focus.wants[a]){
+						if(w.equals("")){
+							w="Wants: "+focus.wants[a];
+						}else{
+							w+=", "+focus.wants[a];
+						}
+					}
+				}
+				/*String w="Wants: "+focus.wants.get(0);
 				for(int a=1;a<focus.wants.size();a++){
 					w+=", "+focus.wants.get(a);
-				}
+				}*/
 				g.drawString(w,5,120);
 			}
 		}
@@ -160,14 +170,14 @@ public class HistogramPanel extends JPanel implements MouseListener{
 			if(a==trade.selected){
 				g.setColor(Color.YELLOW);
 			}
-			g.drawString(trade.offers[a],getWidth()/2,(a+1)*25);
+			g.drawString(Tile.resources[trade.offers[a]],getWidth()/2,(a+1)*25);
 		}
 		for(int a=0;a<trade.offers1.length;a++){
 			g.setColor(Color.WHITE);
 			if(a==trade.selected1){
 				g.setColor(Color.YELLOW);
 			}
-			g.drawString(trade.offers1[a],(int)(getWidth()*0.75),(a+1)*25);
+			g.drawString(Tile.resources[trade.offers1[a]],(int)(getWidth()*0.75),(a+1)*25);
 		}
 		if(trade.possible()){
 			g.setColor(Color.GREEN);

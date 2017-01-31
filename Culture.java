@@ -8,12 +8,15 @@ public class Culture {
 	ArrayList<String[]> skills=new ArrayList<>();
 	private String langHex=language();
 	private Color color=cultureColor();
+	private Language language=new Language(langHex);
 	
 	public Culture copy(){
 		Culture c=new Culture();
-		c.skills=skills;
-		c.color=color;
+		c.skills=new ArrayList<>();
+		c.skills.addAll(skills);
+		c.color=cultureColor();
 		c.langHex=langHex;//alterLanguage(langHex);
+		c.language=language;
 		return c;
 	}
 	
@@ -81,21 +84,24 @@ public class Culture {
 			green/=colors.size();
 			blue/=colors.size();
 		}
+		red*=0.7;
+		blue*=0.7;
+		green*=0.7;
 		Color c=Color.decode(langHex);
-		red+=c.getRed();
-		green+=c.getGreen();
-		blue+=c.getBlue();
-		if(colors.size()>0){
+		red+=c.getRed()*0.3;
+		green+=c.getGreen()*0.3;
+		blue+=c.getBlue()*0.3;
+		/*if(colors.size()>0){
 			red/=2;
 			blue/=2;
 			green/=2;
-		}
+		}*/
 		return new Color(red%256,green%256,blue%256);
 	}
 	
 	// language
 	public void setName(City city){
-		city.name=Language.name(langHex);
+		city.name=language.formWord();
 	}
 	private String language(){
 		Random r=new Random();

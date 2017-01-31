@@ -31,10 +31,10 @@ public class Skills {
 		//return getSkill(new Integer[]{environment});
 		String[] skills={""};
 		if(environment==World.GRASS){
-			skills=new String[]{"Cow Herding","Bronze Working"};
+			skills=new String[]{"Cow Herding","Bronze Working","Fertility Religion"};
 		}
 		if(environment==World.FOREST){
-			skills=new String[]{"Writing"};
+			skills=new String[]{"Writing","Planting","Forestry"};
 		}
 		if(environment==World.MOUNTAIN){
 			skills=new String[]{"Mining","Gem Working"};
@@ -43,7 +43,7 @@ public class Skills {
 			skills=new String[]{"Glassblowing"};
 		}
 		if(environment==World.SNOW){
-			skills=new String[]{"Shivering"};
+			skills=new String[]{"Shivering","Skinning"};
 		}
 		if(environment==World.COAST){
 			skills=new String[]{"Fishing","Coastal Art"};
@@ -61,11 +61,19 @@ public class Skills {
 	
 	private String[] getSkill(int index,boolean omitHex){
 		if(!omitHex){
-			return skills[index];
+			return resIndexConvert(skills[index]);
 		}
 		String[] skill=new String[skills[index].length-1];
 		for(int a=0;a<skill.length;a++){
 			skill[a]=skills[index][a];
+		}
+		return resIndexConvert(skill);
+	}
+	private String[] resIndexConvert(String[] skill){
+		for(int a=1;a<skill.length;a++){
+			if(!skill[a].substring(0,1).equals("#")){
+				skill[a]=Integer.toString(Tile.resIndex(skill[a]));
+			}
 		}
 		return skill;
 	}
@@ -74,7 +82,7 @@ public class Skills {
 	}
 	private String[] getSkill(String name,boolean omitHex){
 		for(int a=0;a<skills.length;a++){
-			if(skills[a][0]==name){
+			if(skills[a][0].equals(name)){
 				return getSkill(a,omitHex);
 			}
 		}
@@ -95,15 +103,20 @@ public class Skills {
 		return true;
 	}*/
 	
+	// optimize later using static scope and pointers
 	private String[][] skills={
-			{"Cow Herding","Cows","Grass","#DEB887"},
+			{"Cow Herding","Cows","Grass","#00FF00"},//DEB887
 			{"Writing","Timber","Fruits","#C2B280"},
 			{"Mining","Iron","Marble","#4D4D4D"},
 			{"Glassblowing","Glass","Oil","#E6E6E6"},
 			{"Shivering","Snow","Furs","#FFFFFF"},
 			{"Fishing","Fish","Pearls","#0000FF"},
-			{"Gem Working","Ruby","Emerald","Sapphire","#B9F2FF"},
+			{"Gem Working","Ruby","Emerald","Sapphire","#FF0000"},//B9F2FF
 			{"Bronze Working","Copper","Tin","#CD7F32"},
-			{"Coastal Art","Seashells","Pearls","#7EC0EE"}
+			{"Coastal Art","Seashells","Pearls","#7EC0EE"},
+			{"Planting","Timber","Fruits","#808000"},
+			{"Forestry","Wild Game","Fruits","#228B22"},
+			{"Skinning","Mammoths","Furs","#8B4513"},
+			{"Fertility Religion","Cows","Copper","#FF69B4"}
 	};
 }
