@@ -57,6 +57,7 @@ public class Trade {
 			}
 		}		
 		city.culture.merge(city.pop,city1.culture,city1.pop);
+		//city.culture.mergeLanguage(city.pop,city1.culture,city1.pop);
 		Game.game.updateWants();
 	}
 	private Integer[] available(boolean[] wants,int wanted,City partner){

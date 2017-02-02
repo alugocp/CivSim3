@@ -1,5 +1,5 @@
 package civsim3;
-import java.awt.Color;
+//import java.awt.Color;
 //import java.util.ArrayList;
 
 public class Skills {
@@ -27,7 +27,10 @@ public class Skills {
 		}
 		return skills.get((int)Math.floor(Math.random()*skills.size()));
 	}*/
-	public String getSkill(int environment){
+	/*public Skills(){
+		setupColors();
+	}*/
+	public String getEnvSkill(int environment){
 		//return getSkill(new Integer[]{environment});
 		String[] skills={""};
 		if(environment==World.GRASS){
@@ -48,44 +51,57 @@ public class Skills {
 		if(environment==World.COAST){
 			skills=new String[]{"Fishing","Coastal Art"};
 		}
-		return getSkill(skills[(int)Math.floor(Math.random()*skills.length)])[0];
+		return skills[(int)Math.floor(Math.random()*skills.length)];//getSkill(skills[(int)Math.floor(Math.random()*skills.length)])[0];
 	}
 	
-	public String[] randomSkill(){
-		return getSkill((int)Math.floor(Math.random()*skills.length),true);
-	}
-	public Color getColor(String name){
-		String[] skill=getSkill(name,false);
-		return Color.decode(skill[skill.length-1]);
-	}
-	
-	private String[] getSkill(int index,boolean omitHex){
-		if(!omitHex){
-			return resIndexConvert(skills[index]);
+	/*public String[] randomSkill(){
+		return skills[(int)Math.floor(Math.random()*skills.length)];/*,true*/
+	//}
+	//public Color getColor(String name){
+		/*String[] skill=getSkill(name);//,false
+		System.out.print(skill.length+", ");
+		System.out.print(skill[0]+", ");
+		System.out.println(skill[skill.length-1]);*/
+		/*System.out.println(name);
+		return skillColors[getSkillIndex(name)];
+	}*/
+	/*private int getSkillIndex(String name){
+		for(int a=0;a<skills.length;a++){
+			if(skills[a][0].equals(name)){
+				return a;
+			}
 		}
-		String[] skill=new String[skills[index].length-1];
+		return -1;
+	}*/
+	
+	//private String[] getSkill(int index){/*,boolean omitHex*/
+		//if(!omitHex){
+			//return /*resIndexConvert(*/skills[index];//);
+		//}
+		/*String[] skill=new String[skills[index].length-1];
 		for(int a=0;a<skill.length;a++){
 			skill[a]=skills[index][a];
 		}
-		return resIndexConvert(skill);
-	}
-	private String[] resIndexConvert(String[] skill){
+		return skill;*///resIndexConvert(skill);
+	//}
+	/*private String[] resIndexConvert(String[] skill){
 		for(int a=1;a<skill.length;a++){
 			if(!skill[a].substring(0,1).equals("#")){
 				skill[a]=Integer.toString(Tile.resIndex(skill[a]));
 			}
 		}
 		return skill;
-	}
-	public String[] getSkill(String name){
+	}*/
+	/*public String[] getSkill(String name){
 		return getSkill(name,true);
-	}
-	private String[] getSkill(String name,boolean omitHex){
+	}*/
+	public Skill getSkill(String name){//,boolean omitHex
 		for(int a=0;a<skills.length;a++){
-			if(skills[a][0].equals(name)){
-				return getSkill(a,omitHex);
+			if(skills[a].name.equals(name)){
+				return skills[a];//,omitHex
 			}
 		}
+		System.out.println("Null skill :(");
 		return null;
 	}
 	
@@ -104,7 +120,7 @@ public class Skills {
 	}*/
 	
 	// optimize later using static scope and pointers
-	private String[][] skills={
+	/*private String[][] skills={
 			{"Cow Herding","Cows","Grass","#00FF00"},//DEB887
 			{"Writing","Timber","Fruits","#C2B280"},
 			{"Mining","Iron","Marble","#4D4D4D"},
@@ -118,5 +134,20 @@ public class Skills {
 			{"Forestry","Wild Game","Fruits","#228B22"},
 			{"Skinning","Mammoths","Furs","#8B4513"},
 			{"Fertility Religion","Cows","Copper","#FF69B4"}
+	};*/
+	private Skill[] skills={
+			new Skill("Cow Herding","#00FF00","Cows","Grass"),
+			new Skill("Writing","#C2B280","Timber","Fruits"),
+			new Skill("Mining","#4D4D4D","Iron","Marble"),
+			new Skill("Glassblowing","#E6E6E6","Glass","Oil"),
+			new Skill("Shivering","#FFFFFF","Snow","Furs"),
+			new Skill("Fishing","#0000FF","Fish","Pearls"),
+			new Skill("Gem Working","#FF0000","Ruby","Emerald","Sapphire"),//B9F2FF
+			new Skill("Bronze Working","#CD7F32","Copper","Tin"),
+			new Skill("Coastal Art","#7EC0EE","Seashells","Pearls"),
+			new Skill("Planting","#808000","Timber","Fruits"),
+			new Skill("Forestry","#228B22","Wild Game","Fruits"),
+			new Skill("Skinning","#8B4513","Mammoths","Furs"),
+			new Skill("Fertility Religion","#FF69B4","Cows","Copper")
 	};
 }

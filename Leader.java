@@ -9,7 +9,7 @@ public abstract class Leader {
 	ArrayList<City> cities=new ArrayList<>();
 	Color color;
 	int x,y;
-	public Leader(int x,int y){// when a new leader is spawned, it needs to add its color to the histogram's list
+	public Leader(int x,int y){
 		id=currentId;
 		currentId++;
 		this.x=x;

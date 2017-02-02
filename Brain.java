@@ -33,15 +33,13 @@ public class Brain {
 		neighbors=new int[city.neighbors.size()][];
 		for(int a=0;a<city.neighbors.size();a++){
 			City neighbor=city.neighbors.get(a);
-			//if(neighbor.leader!=city.leader){
-				neighbors[a]=cityVars(neighbor);
-				o[1+a]=new Option[]{new TradeOption(neighbor),new AttackOption(neighbor)};
-				addEffect(o[1+a][0],citySynapses[1],this.city);
-				addEffect(o[1+a][0],neighborSynapses[0],neighbors[a]);
-				addEffect(o[1+a][1],citySynapses[2],this.city);
-				addEffect(o[1+a][1],neighborSynapses[1],neighbors[a]);
-				allies.remove(neighbor);
-			//}
+			neighbors[a]=cityVars(neighbor);
+			o[1+a]=new Option[]{new TradeOption(neighbor),new AttackOption(neighbor)};
+			addEffect(o[1+a][0],citySynapses[1],this.city);
+			addEffect(o[1+a][0],neighborSynapses[0],neighbors[a]);
+			addEffect(o[1+a][1],citySynapses[2],this.city);
+			addEffect(o[1+a][1],neighborSynapses[1],neighbors[a]);
+			allies.remove(neighbor);
 		}
 		
 		// transition
@@ -159,11 +157,9 @@ public class Brain {
 	
 	// brain setup
 	private double randomSynapse(){
-		return (2*Math.random())-1;
+		double decimal=(2*Math.random())-1;
+		return Math.round(decimal*1000)/1000.0;
 	}
-	/*private double randomHighSynapse(){
-		return 2.5*(Math.random()+1);//(10*Math.random())-5;
-	}*/
 	private void randomBrain(){
 		citySynapses=new double[5][CITY_VAR_LENGTH][];
 		citySynapses[0]=cityVarSynapses();
@@ -236,42 +232,21 @@ public class Brain {
 			}
 		}else if(city.pop>25 && highest instanceof BuildOption){
 			BuildOption build=(BuildOption)highest;
-			//System.out.print(city.leader.cities.size()+", ");
-			/*City built=*/
 			new City(city,build.x,build.y);
-			/*if(city.leader.cities.contains(built)){
-				System.out.println("Added: "+city.leader.cities.size());
-			}else{
-				System.out.println("Not added!");
-			}
-			System.out.println(city.leader);
-			System.out.println(built.leader);*/
-			//System.out.print(city.leader.cities.size()+"; ");
 		}
 	}
 	private void addEffect(Option option,double[][] synapses,int[] vars){
 		double effect=0;
 		for(int a=0;a<synapses.length;a++){
 			if(synapses[a].length==1){
-				//try{
-					if(vars[a]==1){
-						effect+=synapses[a][0];
-					}
-				/*}catch(ArrayIndexOutOfBoundsException uhOh){
-					uhOh.printStackTrace();
-					System.out.println(PLOT_VAR_LENGTH);
-					System.out.println(vars.length);
-					System.out.println(CITY_VAR_LENGTH);
-					System.exit(0);
-				}*/
+				if(vars[a]==1){
+					effect+=synapses[a][0];
+				}
 			}else{
 				effect+=synapses[a][vars[a]];
 			}
 		}
 		option.clout+=effect;
-		/*if(highest==null || option.clout>=highest.clout){
-			highest=option;
-		}*/
 	}
 	
 	private abstract class Option{

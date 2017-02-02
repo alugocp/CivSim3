@@ -33,9 +33,10 @@ public class City {
 		setTerritories();
 		culture=founder.culture.copy();
 		culture.setName(this);
-		/*if(founder.interest==null || culture.skills.size()>=Culture.MAX_SKILLS){
+		if(founder.interest==null || culture.skills.size()>=Culture.MAX_SKILLS){
 			interest=null;
-		}*/
+			wants=new boolean[Tile.resources.length];
+		}
 		pop=25;
 		founder.pop-=25;
 	}
@@ -112,11 +113,12 @@ public class City {
 		wants=new boolean[Tile.resources.length];
 		if(interest!=null){
 			//System.out.println(interest[interest.length-1]);
-			String[] res=Game.skills.getSkill(interest);
-			for(int a=1;a<res.length;a++){
+			String[] res=Game.skills.getSkill(interest).resources;
+			for(int a=0;a<res.length;a++){
+				//System.out.println(res[a]);
 				if(!hasResource(Tile.resIndex(res[a]))){
 					//w.add(Integer.parseInt(interest[a]));
-					wants[Integer.parseInt(res[a])]=true;
+					wants[Tile.resIndex(res[a])]=true;
 					wanted++;
 				}
 			}
@@ -252,7 +254,7 @@ public class City {
 	}
 	private void setNewInterest(){
 		//if(culture.skills.size()<=Math.ceil(Culture.MAX_SKILLS/2)){
-			interest=Game.skills.getSkill(randomEnviron());
+			interest=Game.skills.getEnvSkill(randomEnviron());
 		/*}else{
 			interest=Game.skills.randomSkill();
 		}*/
@@ -316,7 +318,7 @@ public class City {
 			}
 		}
 		//resources=r.toArray(new String[r.size()]);
-		interest=Game.skills.getSkill(randomEnviron());
+		interest=Game.skills.getEnvSkill(randomEnviron());
 		setWants();
 	}
 	private int[][] territories(int x,int y){

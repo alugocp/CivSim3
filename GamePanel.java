@@ -39,7 +39,7 @@ public class GamePanel extends JPanel implements MouseListener,MouseMotionListen
 					g.fillPolygon(hex);
 					g.setColor(Color.BLACK);
 					Tile tile=Game.world.get(x, y);
-					if((Game.finished || Game.mode==Game.PLAYER) && tile.resource!=-1 && tile.city==null){
+					if(Game.mode==Game.PLAYER && tile.resource!=-1 && tile.city==null){
 						g.drawString(Tile.resources[tile.resource],-Game.xDisHalf(),0);
 					}
 					if(tile.city!=null){
