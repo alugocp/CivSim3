@@ -66,6 +66,7 @@ public class Culture {
 	private Color cultureColor(){
 		ArrayList<Color> colors=new ArrayList<>();
 		for(int a=0;a<skills.size();a++){
+			//System.out.println(skills.get(a)[0]);
 			int times=Integer.parseInt(skills.get(a)[1]);
 			for(int b=0;b<times/10;b++){
 				colors.add(Game.skills.getColor(skills.get(a)[0]));

@@ -65,9 +65,9 @@ public class HistogramPanel extends JPanel implements MouseListener{
 				for(int a=0;a<focus.wants.length;a++){
 					if(focus.wants[a]){
 						if(w.equals("")){
-							w="Wants: "+focus.wants[a];
+							w="Wants: "+Tile.resources[a];//focus.wants[a];
 						}else{
-							w+=", "+focus.wants[a];
+							w+=", "+Tile.resources[a];//focus.wants[a];
 						}
 					}
 				}

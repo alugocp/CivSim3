@@ -68,6 +68,7 @@ public abstract class Game{
 			if(e.get(a).cities.size()==0){
 				enemies.remove(e.get(a));
 			}
+			//System.out.println(e.get(a).cities.size());
 		}
 	}
 	public static void gameCycle(){
@@ -78,7 +79,8 @@ public abstract class Game{
 	}
 	public static void simCycle(){
 		mode=SIM;
-		while(t<50){//100
+		player.cities.get(0).destroy();
+		while(t<100){
 			System.out.println("Year "+t);
 			enemyTurn();
 			histo.logHistogramData();

@@ -27,7 +27,7 @@ public class Skills {
 		}
 		return skills.get((int)Math.floor(Math.random()*skills.size()));
 	}*/
-	public String[] getSkill(int environment){
+	public String getSkill(int environment){
 		//return getSkill(new Integer[]{environment});
 		String[] skills={""};
 		if(environment==World.GRASS){
@@ -48,7 +48,7 @@ public class Skills {
 		if(environment==World.COAST){
 			skills=new String[]{"Fishing","Coastal Art"};
 		}
-		return getSkill(skills[(int)Math.floor(Math.random()*skills.length)]);
+		return getSkill(skills[(int)Math.floor(Math.random()*skills.length)])[0];
 	}
 	
 	public String[] randomSkill(){
@@ -77,7 +77,7 @@ public class Skills {
 		}
 		return skill;
 	}
-	private String[] getSkill(String name){
+	public String[] getSkill(String name){
 		return getSkill(name,true);
 	}
 	private String[] getSkill(String name,boolean omitHex){

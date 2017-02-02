@@ -8,8 +8,7 @@ public class City {
 	//private ArrayList<String> tradedResources=new ArrayList<>();
 	ArrayList<City> neighbors=new ArrayList<>();
 	Culture culture=new Culture();
-	String name;
-	String[] interest;//,resources;
+	String name,interest;
 	boolean[] resources=new boolean[Tile.resources.length];
 	boolean[] wants=new boolean[Tile.resources.length];
 	private int age;
@@ -30,12 +29,13 @@ public class City {
 	}
 	public City(City founder,int x,int y){
 		this(founder.leader,x,y);
+		//System.out.println("City founded!");
 		setTerritories();
 		culture=founder.culture.copy();
 		culture.setName(this);
-		if(founder.interest==null || culture.skills.size()>=Culture.MAX_SKILLS){
+		/*if(founder.interest==null || culture.skills.size()>=Culture.MAX_SKILLS){
 			interest=null;
-		}
+		}*/
 		pop=25;
 		founder.pop-=25;
 	}
@@ -112,10 +112,11 @@ public class City {
 		wants=new boolean[Tile.resources.length];
 		if(interest!=null){
 			//System.out.println(interest[interest.length-1]);
-			for(int a=1;a<interest.length;a++){
-				if(!hasResource(interest[a])){
+			String[] res=Game.skills.getSkill(interest);
+			for(int a=1;a<res.length;a++){
+				if(!hasResource(Tile.resIndex(res[a]))){
 					//w.add(Integer.parseInt(interest[a]));
-					wants[Integer.parseInt(interest[a])]=true;
+					wants[Integer.parseInt(res[a])]=true;
 					wanted++;
 				}
 			}
@@ -131,9 +132,9 @@ public class City {
 		return tradedResources.contains(res);//false;*/
 		return resources[res];
 	}
-	private boolean hasResource(String res){
+	/*private boolean hasResource(String res){
 		return hasResource(Integer.parseInt(res));
-	}
+	}*/
 	public void getResource(int res){
 		//tradedResources.add(res);
 		resources[res]=true;
@@ -150,6 +151,8 @@ public class City {
 		l.cities.add(this);
 		leader=l;
 		loyalty=MAX_LOYALTY;
+		interest=null;
+		wants=new boolean[Tile.resources.length];
 	}
 	public void changeLoyalty(int boost){
 		loyalty+=boost;
@@ -219,7 +222,7 @@ public class City {
 				}
 			}
 		}else{
-			for(int a=1;a<interest.length;a++){
+			/*for(int a=1;a<interest.length;a++){
 				if(!hasResource(interest[a])){
 					if(!appeased){
 						changeLoyalty(-1);
@@ -229,11 +232,22 @@ public class City {
 					}
 					return;
 				}
+			}*/
+			for(int a=0;a<wants.length;a++){
+				if(wants[a]){
+					if(!appeased){
+						changeLoyalty(-1);
+						if(loyalty<=0){
+							rebel();
+						}
+					}
+					return;
+				}
 			}
-			culture.upgrade(interest[0]);
+			culture.upgrade(interest);
 			interest=null;
 			//wants.clear();
-			wants=new boolean[Tile.resources.length];
+			//wants=new boolean[Tile.resources.length];
 		}
 	}
 	private void setNewInterest(){
