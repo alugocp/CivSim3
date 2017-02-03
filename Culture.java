@@ -9,7 +9,7 @@ public class Culture {
 	private String langHex=language();
 	private Color color=cultureColor();
 	private Language language=new Language(langHex);
-	
+
 	public Culture copy(){
 		Culture c=new Culture();
 		c.skills=new ArrayList<>();
@@ -97,13 +97,13 @@ public class Culture {
 			green/=colors.size();
 			blue/=colors.size();
 		}
-		red*=0.5;//0.7
-		blue*=0.5;
-		green*=0.5;
+		red*=0.7;
+		blue*=0.7;
+		green*=0.7;
 		Color c=Color.decode(langHex);
-		red+=c.getRed()*0.5;//0.3
-		green+=c.getGreen()*0.5;
-		blue+=c.getBlue()*0.5;
+		red+=c.getRed()*0.3;
+		green+=c.getGreen()*0.3;
+		blue+=c.getBlue()*0.3;
 		/*if(colors.size()>0){
 			red/=2;
 			blue/=2;

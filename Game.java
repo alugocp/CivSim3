@@ -80,7 +80,7 @@ public abstract class Game{
 	public static void simCycle(){
 		mode=SIM;
 		player.cities.get(0).destroy();
-		while(t<100){
+		while(t<200){
 			System.out.println("Year "+t);
 			enemyTurn();
 			histo.logHistogramData();

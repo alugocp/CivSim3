@@ -63,7 +63,8 @@ public abstract class Leader {
 	}
 	private boolean closeEnoughSize(Leader leader){
 		int diff=(int)Math.abs(cities.size()-leader.cities.size());
-		return diff<=Math.ceil(cities.size()*0.05) || diff<=Math.ceil(leader.cities.size()*0.05);
+		final double percent=0.07;
+		return diff<=Math.ceil(cities.size()*percent) || diff<=Math.ceil(leader.cities.size()*percent);
 	}
 	public void periodOfWarringStates(City rebel){
 		City cap=Game.world.get(rebel.leader.x,rebel.leader.y).city;
