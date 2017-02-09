@@ -192,8 +192,8 @@ public class Brain {
 		for(int b=0;b<15;b++){
 			synapses[resLen+1][b]=randomSynapse();
 		}
-		synapses[resLen+2]=new double[12];
-		synapses[resLen+3]=new double[12];
+		synapses[resLen+2]=new double[19];//12
+		synapses[resLen+3]=new double[19];//12
 		for(int b=0;b<12;b++){
 			synapses[resLen+2][b]=randomSynapse();
 			synapses[resLen+3][b]=randomSynapse();

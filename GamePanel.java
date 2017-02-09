@@ -48,7 +48,7 @@ public class GamePanel extends JPanel implements MouseListener,MouseMotionListen
 							g.fillOval(-radius,-radius,radius*2,radius*2);
 							g.setColor(Color.WHITE);
 						}
-						if(tile.city.interest!=null && tile.city.wants!=null && tile.city.wanted>0){
+						if(tile.city.interest!=null && tile.city.wanted>0){
 							g.drawString("!",0,0);
 						}
 						g.setColor(highlighted);

@@ -1,14 +1,14 @@
 package civsim3;
 import java.util.ArrayList;
-import java.util.Random;
+//import java.util.Random;
 import java.awt.Color;
 
 public class Culture {
 	static final int MAX_SKILLS=10;
 	ArrayList<Skill> skills=new ArrayList<>();
-	private String langHex=language();
+	//private String langHex=language();
+	private Language language=new Language();//langHex
 	private Color color=cultureColor();
-	private Language language=new Language(langHex);
 
 	public Culture copy(){
 		Culture c=new Culture();
@@ -17,8 +17,14 @@ public class Culture {
 			c.skills.add(skills.get(a).copy());
 		}
 		c.color=cultureColor();
-		c.langHex=langHex;//alterLanguage(langHex);
-		c.language=language;
+		//c.langHex=langHex;//alterLanguage(langHex);
+		//c.language=language.copy();
+		/*if(Math.random()<0.02){
+			c.language=language.altered();
+		}else{
+			c.language=language;
+		}*/
+		c.language=language;//language.copy();
 		return c;
 	}
 	
@@ -51,6 +57,10 @@ public class Culture {
 		}
 		//mergeLanguage(pop,culture,theirPop);
 	}
+	/*public void alterLanguage(long s){
+		language=language.altered(s);
+		color=cultureColor();
+	}*/
 	/*public void mergeLanguage(double pop,Culture culture,double theirPop){
 		Color color=Color.decode(langHex);
 		Color color1=Color.decode(culture.langHex);
@@ -100,10 +110,10 @@ public class Culture {
 		red*=0.7;
 		blue*=0.7;
 		green*=0.7;
-		Color c=Color.decode(langHex);
-		red+=c.getRed()*0.3;
-		green+=c.getGreen()*0.3;
-		blue+=c.getBlue()*0.3;
+		//Color c=Color.decode(langHex);
+		red+=language.color.getRed()*0.3;
+		green+=language.color.getGreen()*0.3;
+		blue+=language.color.getBlue()*0.3;
 		/*if(colors.size()>0){
 			red/=2;
 			blue/=2;
@@ -116,7 +126,7 @@ public class Culture {
 	public void setName(City city){
 		city.name=language.formWord();
 	}
-	private String language(){
+	/*private String language(){
 		Random r=new Random();
 		String[] letters={"A","B","C","D","E","F"};
 		String l="#";
@@ -129,7 +139,7 @@ public class Culture {
 			}
 		}
 		return l;
-	}
+	}*/
 	/*private String alterLanguage(String lang){
 		Random r=new Random();
 		Color c=Color.decode(lang);

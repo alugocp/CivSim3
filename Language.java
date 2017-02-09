@@ -1,21 +1,38 @@
 package civsim3;
 import java.util.Random;
+import java.awt.Color;
 
-public class Language {
+public class Language extends Object{
 	private static final String[] cons={"b","c","d","f","g","h","j","k","l","m","n","p","q","r","s","t","v","w","x","y","z"};
 	private static final String[] vowels={"a","e","i","o","u"};
 	private double[] constPercentages=new double[cons.length];
 	private double[] vowelPercentages=new double[vowels.length];
 	private int avgLen,dbVow,dbCon,startVow,endVow;
 	private Random random;
-	public Language(String hex){
-		random=new Random(getSeed(hex));
+	//private long seed;
+	Color color;
+	public Language(){/*String hex*/
+		changeSeed(System.currentTimeMillis());
+	}
+	/*private Language(long seed){
+		changeSeed(seed);
+	}*/
+	/*public Language copy(){
+		return new Language(seed);
+	}*/
+	/*public Language altered(long s){
+		return new Language(seed+s);
+	}*/
+	private void changeSeed(long seed){
+		//this.seed=seed;
+		this.random=new Random(seed);
 		avgLen=random.nextInt(8)+3;
 		dbVow=random.nextInt(100);
 		dbCon=random.nextInt(100);
 		startVow=random.nextInt(100);
 		endVow=random.nextInt(100);
 		setupPercentages();
+		color=new Color(random.nextInt(256),random.nextInt(256),random.nextInt(256));
 	}
 	private void setupPercentages(){
 		double total=0;
@@ -89,7 +106,7 @@ public class Language {
 		}
 		return vowels[vowels.length-1];
 	}
-	private long getSeed(String hex){
+	/*private long getSeed(String hex){
 		String[] values={"0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F"};
 		int total=0;
 		for(int a=1;a<hex.length();a++){
@@ -100,5 +117,5 @@ public class Language {
 			total+=i;
 		}
 		return (long)(total/6.0);
-	}
+	}*/
 }

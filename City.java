@@ -177,6 +177,7 @@ public class City {
 		for(int a=0;a<neighbors.size();a++){
 			neighbors.get(a).neighbors.remove(this);
 		}
+		neighbors.clear();
 		age=-1;
 	}
 	public boolean isDead(){
@@ -196,6 +197,10 @@ public class City {
 			return;
 		}
 		for(int a=0;a<neighbors.size();a++){
+			//City neighbor=neighbors.get(a);
+			/*if(Game.world.get(neighbor.x,neighbor.y).city!=neighbor){
+				neighbors.remove(neighbor);
+			}else */
 			if(neighbors.get(a).leader==leader){
 				return;
 			}
@@ -207,6 +212,7 @@ public class City {
 			new Enemy(capital);
 			leader.periodOfWarringStates(capital);
 		}
+		//System.out.println("Chaos death!");
 	}
 	public void procreate(){
 		pop+=10;//(int)Math.ceil(pop/10.0)*(food-1);
@@ -306,7 +312,7 @@ public class City {
 			int[][] s=Tile.surroundings(territories[a][0],territories[a][1]);
 			for(int b=0;b<s.length;b++){
 				Tile t=Game.world.get(s[b][0],s[b][1]);
-				if(t.territory!=null){
+				if(t.territory!=null && !(t.territory[0]==x && t.territory[1]==y)){
 					City c=Game.world.get(t.territory[0],t.territory[1]).city;
 					if(c==null){
 						t.territory=null;
@@ -325,7 +331,7 @@ public class City {
 		ArrayList<int[]> points=Tile.twoTileSurroundings(x,y);
 		for(int a=0;a<points.size();a++){
 			Tile tile=Game.world.get(points.get(a)[0],points.get(a)[1]);
-			if(tile.city!=null || tile.territory!=null || tile.environment==World.WATER){
+			if((tile.city!=null && tile.city!=this) || tile.territory!=null || tile.environment==World.WATER){
 				points.remove(a);
 				a--;
 			}

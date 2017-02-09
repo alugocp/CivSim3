@@ -1,8 +1,10 @@
 package civsim3;
 import java.awt.Color;
 import java.util.ArrayList;
+//import java.util.Random;
 
 public abstract class Leader {
+	//private static final Random random=new Random();
 	static int currentId=0;
 	boolean first=true;
 	private int id;
@@ -39,6 +41,8 @@ public abstract class Leader {
 	protected void developCities(){
 		ArrayList<City> c=new ArrayList<>();
 		c.addAll(cities);
+		//boolean alter=Math.random()<0.01;
+		//long l=random.nextLong();
 		for(int a=0;a<c.size();a++){
 			City city=c.get(a);
 			if(city.leader==this){
@@ -56,14 +60,18 @@ public abstract class Leader {
 					}
 					city.procreate();
 					city.advanceSkill();
+					/*if(alter){
+						city.culture.alterLanguage(l);
+						city.culture.setName(city);
+					}*/
 				}
 			}
 		}
 		Game.redraw(true,Game.histo.focus!=null,false,false);
 	}
 	private boolean closeEnoughSize(Leader leader){
+		final double percent=0.04;
 		int diff=(int)Math.abs(cities.size()-leader.cities.size());
-		final double percent=0.07;
 		return diff<=Math.ceil(cities.size()*percent) || diff<=Math.ceil(leader.cities.size()*percent);
 	}
 	public void periodOfWarringStates(City rebel){
@@ -105,8 +113,19 @@ public abstract class Leader {
 		/*for(int a=0;a<leader.cities.size();a++){
 			leader.cities.get(a).changeLeader(this);
 		}*/
+		/*int times=10;
+		int cities=leader.cities.size()/times;
+		for(int a=0;a<times-1;a++){
+			for(int b=0;b<cities;b++){
+				if(leader.cities.size()>0){
+					leader.cities.get(0).changeLeader(this);
+				}
+			}
+			Game.histo.logHistogramData();
+		}*/
 		while(leader.cities.size()>0){
 			leader.cities.get(0).changeLeader(this);
 		}
+		//Game.histo.logHistogramData();
 	}
 }

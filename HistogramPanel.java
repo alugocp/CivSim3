@@ -154,6 +154,11 @@ public class HistogramPanel extends JPanel implements MouseListener{
 		}
 		sizes.add(data);
 	}
+	/*public void copyLastData(int times){
+		for(int a=0;a<times;a++){
+			sizes.add(sizes.get(sizes.size()-1));
+		}
+	}*/
 	
 	// commands
 	public boolean hasBuildPoint(int x,int y){
