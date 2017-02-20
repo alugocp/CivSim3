@@ -1,10 +1,8 @@
 package civsim3;
 import java.awt.Color;
 import java.util.ArrayList;
-//import java.util.Random;
 
 public abstract class Leader {
-	//private static final Random random=new Random();
 	static int currentId=0;
 	boolean first=true;
 	private int id;
@@ -18,7 +16,6 @@ public abstract class Leader {
 		this.y=y;
 		color=getColor();
 		new City(this,x,y);
-		//Game.leaders.add(this);
 	}
 	public Leader(City city){
 		id=currentId;
@@ -26,8 +23,6 @@ public abstract class Leader {
 		this.x=city.x;
 		this.y=city.y;
 		color=getColor();
-		//Game.leaders.add(Game.leaders.indexOf(city.leader),this);
-		//Game.histo.colors.add(color);
 	}
 	private Color getColor(){
 		int red=(47*(id+y))+(x/2);
@@ -41,15 +36,19 @@ public abstract class Leader {
 	protected void developCities(){
 		ArrayList<City> c=new ArrayList<>();
 		c.addAll(cities);
-		//boolean alter=Math.random()<0.01;
-		//long l=random.nextLong();
 		for(int a=0;a<c.size();a++){
 			City city=c.get(a);
 			if(city.leader==this){
-				city.removeChaos();
+				if(!Game.firstTurn){
+					city.removeChaos();
+				}
 				if(!city.isDead()){
 					for(int b=0;b<city.neighbors.size();b++){
-						if(city.neighbors.get(b).leader!=this && closeEnoughSize(city.neighbors.get(b).leader)){
+						Leader l=city.neighbors.get(b).leader;
+						if(l!=Game.player && l!=this && closeEnoughSize(l)){
+							if(this==Game.player){
+								System.out.println(l.getCapital().name+" has sworn fealty to you");
+							}
 							merge(city.neighbors.get(b).leader);
 						}
 					}
@@ -60,17 +59,13 @@ public abstract class Leader {
 					}
 					city.procreate();
 					city.advanceSkill();
-					/*if(alter){
-						city.culture.alterLanguage(l);
-						city.culture.setName(city);
-					}*/
 				}
 			}
 		}
 		Game.redraw(true,Game.histo.focus!=null,false,false);
 	}
 	private boolean closeEnoughSize(Leader leader){
-		final double percent=0.04;
+		final double percent=0.02;
 		int diff=(int)Math.abs(cities.size()-leader.cities.size());
 		return diff<=Math.ceil(cities.size()*percent) || diff<=Math.ceil(leader.cities.size()*percent);
 	}
@@ -110,22 +105,11 @@ public abstract class Leader {
 		}
 	}
 	public void merge(Leader leader){
-		/*for(int a=0;a<leader.cities.size();a++){
-			leader.cities.get(a).changeLeader(this);
-		}*/
-		/*int times=10;
-		int cities=leader.cities.size()/times;
-		for(int a=0;a<times-1;a++){
-			for(int b=0;b<cities;b++){
-				if(leader.cities.size()>0){
-					leader.cities.get(0).changeLeader(this);
-				}
-			}
-			Game.histo.logHistogramData();
-		}*/
 		while(leader.cities.size()>0){
 			leader.cities.get(0).changeLeader(this);
 		}
-		//Game.histo.logHistogramData();
+	}
+	public City getCapital(){
+		return Game.world.get(x, y).city;
 	}
 }

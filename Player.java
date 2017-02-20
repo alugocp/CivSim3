@@ -28,5 +28,13 @@ public class Player extends Leader{
 		Game.turn=Game.PLAYER;
 		developCities();
 		Game.game.updateWants();
+		if(Game.enemies.size()==0){
+			Game.turn++;
+			System.out.println("You've conquered the world!");
+		}
+		if(cities.size()==0){
+			Game.turn++;
+			System.out.println("Sorry, but you lost :(");
+		}
 	}
 }

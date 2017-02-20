@@ -119,12 +119,18 @@ public class Brain {
 		for(int a=0;a<city.wants.length;a++){
 			vars[a+city.resources.length]=toInt(city.wants[a]);
 		}
-		if(city.loyalty<0){
+		/*if(city.loyalty<0){
 			city.loyalty=0;
 			System.out.println("Negative loyalty");
-		}
+		}*/
 		vars[Tile.resources.length*2]=city.loyalty;
 		vars[(Tile.resources.length*2)+1]=popIndex(city.pop);
+		if(city.neighbors.size()>19){
+			Game.histo.changeFocus(city.x,city.y);
+			System.out.println("Error: neighbor count over 19: "+city.neighbors.size());
+			System.out.println("Caused by "+city.name);
+			System.out.println("Nation size: "+city.leader.cities.size());
+		}
 		int friends=0;
 		for(int a=0;a<city.neighbors.size();a++){
 			if(city.neighbors.get(a).leader==city.leader){
@@ -192,8 +198,8 @@ public class Brain {
 		for(int b=0;b<15;b++){
 			synapses[resLen+1][b]=randomSynapse();
 		}
-		synapses[resLen+2]=new double[19];//12
-		synapses[resLen+3]=new double[19];//12
+		synapses[resLen+2]=new double[20];
+		synapses[resLen+3]=new double[20];
 		for(int b=0;b<12;b++){
 			synapses[resLen+2][b]=randomSynapse();
 			synapses[resLen+3][b]=randomSynapse();

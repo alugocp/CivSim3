@@ -39,7 +39,7 @@ public class GamePanel extends JPanel implements MouseListener,MouseMotionListen
 					g.fillPolygon(hex);
 					g.setColor(Color.BLACK);
 					Tile tile=Game.world.get(x, y);
-					if(Game.mode==Game.PLAYER && tile.resource!=-1 && tile.city==null){
+					if(tile.resource>=0 && tile.city==null && (Game.histo.action==HistogramPanel.BUILD || (Game.histo.focus!=null && tile.territory!=null && tile.territory[0]==Game.histo.focus.x && tile.territory[1]==Game.histo.focus.y))){
 						g.drawString(Tile.resources[tile.resource],-Game.xDisHalf(),0);
 					}
 					if(tile.city!=null){
@@ -48,7 +48,7 @@ public class GamePanel extends JPanel implements MouseListener,MouseMotionListen
 							g.fillOval(-radius,-radius,radius*2,radius*2);
 							g.setColor(Color.WHITE);
 						}
-						if(tile.city.interest!=null && tile.city.wanted>0){
+						if(tile.city.interest!=null && tile.city.wanting()){
 							g.drawString("!",0,0);
 						}
 						g.setColor(highlighted);
@@ -79,7 +79,7 @@ public class GamePanel extends JPanel implements MouseListener,MouseMotionListen
 	public void updateWants(){
 		wants=0;
 		for(int a=0;a<Game.player.cities.size();a++){
-			if(Game.player.cities.get(a).wanted>0){
+			if(Game.player.cities.get(a).wanting()){
 				wants++;
 			}
 		}

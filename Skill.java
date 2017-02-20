@@ -19,4 +19,9 @@ public class Skill {
 		s.amount=amount;
 		return s;
 	}
+	public Skill copy(int amount){
+		Skill s=copy();
+		s.amount=amount;
+		return s;
+	}
 }

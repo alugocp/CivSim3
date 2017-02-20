@@ -12,7 +12,7 @@ public class World extends Hex2DArray{
 	static final int COAST=6;
 	private final Random r=new Random();
 	public World(){
-		super(160,90);//240,120
+		super(160,90);
 		setDimensions(0,0,Game.xDis(),Game.yDis());
 	}
 	public void setup(){
@@ -20,9 +20,7 @@ public class World extends Hex2DArray{
 		terraform();
 		Player.newPlayer();
 		for(int a=0;a<Game.enemies.size();a++){
-			for(int b=0;b<Game.enemies.get(a).cities.size();b++){
-				Game.enemies.get(a).cities.get(b).setTerritories();
-			}
+			Game.enemies.get(a).cities.get(0).setTerritories();
 		}
 		Game.player.cities.get(0).setTerritories();
 	}

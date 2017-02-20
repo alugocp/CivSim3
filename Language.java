@@ -9,22 +9,11 @@ public class Language extends Object{
 	private double[] vowelPercentages=new double[vowels.length];
 	private int avgLen,dbVow,dbCon,startVow,endVow;
 	private Random random;
-	//private long seed;
 	Color color;
-	public Language(){/*String hex*/
+	public Language(){
 		changeSeed(System.currentTimeMillis());
 	}
-	/*private Language(long seed){
-		changeSeed(seed);
-	}*/
-	/*public Language copy(){
-		return new Language(seed);
-	}*/
-	/*public Language altered(long s){
-		return new Language(seed+s);
-	}*/
 	private void changeSeed(long seed){
-		//this.seed=seed;
 		this.random=new Random(seed);
 		avgLen=random.nextInt(8)+3;
 		dbVow=random.nextInt(100);
@@ -61,26 +50,26 @@ public class Language extends Object{
 		String name="";
 		boolean wasVow=r.nextInt(100)<startVow;
 		if(wasVow){
-			name+=getVowel().toUpperCase();//vowels[r.nextInt(vowels.length)].toUpperCase();
+			name+=getVowel().toUpperCase();
 		}else{
-			name+=getConst().toUpperCase();//cons[r.nextInt(cons.length)].toUpperCase();
+			name+=getConst().toUpperCase();
 		}
 		while(name.length()<avgLen){
 			if(wasVow){
-				name+=getConst();//cons[r.nextInt(cons.length)];
+				name+=getConst();
 				if(r.nextInt(100)<dbCon){
-					name+=getConst();//cons[r.nextInt(cons.length)];
+					name+=getConst();
 				}
 			}else{
-				name+=getVowel();//vowels[r.nextInt(vowels.length)];
+				name+=getVowel();
 				if(r.nextInt(100)<dbVow){
-					name+=getVowel();//vowels[r.nextInt(vowels.length)];
+					name+=getVowel();
 				}
 			}
 			wasVow=!wasVow;
 		}
 		if(!wasVow && r.nextInt(100)<endVow){
-			name+=getVowel();//vowels[r.nextInt(vowels.length)];
+			name+=getVowel();
 		}
 		return name;
 	}
@@ -106,16 +95,4 @@ public class Language extends Object{
 		}
 		return vowels[vowels.length-1];
 	}
-	/*private long getSeed(String hex){
-		String[] values={"0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F"};
-		int total=0;
-		for(int a=1;a<hex.length();a++){
-			int i=0;
-			while(!values[i].equals(hex.substring(a,a+1))){
-				i++;
-			}
-			total+=i;
-		}
-		return (long)(total/6.0);
-	}*/
 }

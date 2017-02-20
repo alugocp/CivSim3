@@ -18,6 +18,8 @@ public class HistogramPanel extends JPanel implements MouseListener{
 	static final int BUILD=3;
 	private BufferedImage image;
 	private final Font font;
+	private String capital;
+	private Leader leader;
 	int[][] building={};
 	int action=NONE;
 	Trade trade;
@@ -49,18 +51,32 @@ public class HistogramPanel extends JPanel implements MouseListener{
 		trade=null;
 		building=new int[][]{};
 		action=NONE;
+		/*if(focus!=null){
+			leader=focus.leader;
+			capital=Game.world.get(focus.leader.x,focus.leader.y).city.name;
+		}*/
+		refreshFocus();
+	}
+	public void refreshFocus(){
+		if(focus!=null && leader!=focus.leader){
+			capital=Game.world.get(focus.leader.x,focus.leader.y).city.name;
+		}
 	}
 	private void drawFocus(Graphics g){
 		g.setColor(loyaltyColor(focus.loyalty));
 		g.fillRect(90,70,focus.loyalty*20,25);
 		g.setColor(Color.WHITE);
 		g.setFont(font);
-		g.drawString("Name: "+focus.name,5,30);
+		if(focus.isCapital() || focus.leader==Game.player){
+			g.drawString("Name: "+focus.name,5,30);
+		}else{
+			g.drawString("Name: "+focus.name+" of "+capital,5,30);
+		}
 		g.drawString("Pop: "+focus.pop,5,60);
 		g.drawString("Loyalty:",5,90);
 		g.drawString(focus.loyalty+"/"+City.MAX_LOYALTY,105,90);
 		if(focus.interest!=null && action!=TRADE){
-			if(focus.wanted>0){
+			if(focus.wanting()){
 				String w="";
 				for(int a=0;a<focus.wants.length;a++){
 					if(focus.wants[a]){
@@ -170,19 +186,30 @@ public class HistogramPanel extends JPanel implements MouseListener{
 		return false;
 	}
 	private void drawTrade(Graphics g){
+		if(!trade.possible()){
+			return;
+		}
 		for(int a=0;a<trade.offers.length;a++){
 			g.setColor(Color.WHITE);
 			if(a==trade.selected){
 				g.setColor(Color.YELLOW);
 			}
-			g.drawString(Tile.resources[trade.offers[a]],getWidth()/2,(a+1)*25);
+			String offer="People";
+			if(trade.offers[a]>=0){
+				offer=Tile.resources[trade.offers[a]];
+			}
+			g.drawString(offer,getWidth()/2,(a+1)*25);
 		}
 		for(int a=0;a<trade.offers1.length;a++){
 			g.setColor(Color.WHITE);
 			if(a==trade.selected1){
 				g.setColor(Color.YELLOW);
 			}
-			g.drawString(Tile.resources[trade.offers1[a]],(int)(getWidth()*0.75),(a+1)*25);
+			String offer="People";
+			if(trade.offers1[a]>=0){
+				offer=Tile.resources[trade.offers1[a]];
+			}
+			g.drawString(offer,(int)(getWidth()*0.75),(a+1)*25);
 		}
 		if(trade.possible()){
 			g.setColor(Color.GREEN);

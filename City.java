@@ -4,8 +4,7 @@ import java.util.ArrayList;
 
 public class City {
 	static final int MAX_LOYALTY=5;
-	int x,y,pop,loyalty,wanted;
-	//private ArrayList<String> tradedResources=new ArrayList<>();
+	int x,y,pop,loyalty;//,wanted;
 	ArrayList<City> neighbors=new ArrayList<>();
 	Culture culture=new Culture();
 	String name,interest;
@@ -23,13 +22,11 @@ public class City {
 		loyalty=MAX_LOYALTY;
 		Tile tile=Game.world.get(x,y);
 		tile.city=this;
-		//tile.resource=null;
 		leader.cities.add(this);
 		culture.setName(this);
 	}
 	public City(City founder,int x,int y){
 		this(founder.leader,x,y);
-		//System.out.println("City founded!");
 		setTerritories();
 		culture=founder.culture.copy();
 		culture.setName(this);
@@ -108,43 +105,35 @@ public class City {
 	
 	// resources
 	private void setWants(){
-		//ArrayList<Integer> w=new ArrayList<>();
-		wanted=0;
+		//wanted=0;
 		wants=new boolean[Tile.resources.length];
 		if(interest!=null){
-			//System.out.println(interest[interest.length-1]);
 			String[] res=Game.skills.getSkill(interest).resources;
 			for(int a=0;a<res.length;a++){
-				//System.out.println(res[a]);
 				if(!hasResource(Tile.resIndex(res[a]))){
-					//w.add(Integer.parseInt(interest[a]));
 					wants[Tile.resIndex(res[a])]=true;
-					wanted++;
+					//wanted++;
 				}
 			}
 		}
-		//return w;
 	}
 	public boolean hasResource(int res){
-		/*for(int a=0;a<resources.length;a++){
-			if(resources[a].equals(res)){
-				return true;
-			}
-		}
-		return tradedResources.contains(res);//false;*/
 		return resources[res];
 	}
-	/*private boolean hasResource(String res){
-		return hasResource(Integer.parseInt(res));
-	}*/
 	public void getResource(int res){
-		//tradedResources.add(res);
 		resources[res]=true;
 		if(wants[res]){
 			wants[res]=false;
-			wanted--;
+			//wanted--;
 		}
-		//wants.remove(res);
+	}
+	public boolean wanting(){
+		for(int a=0;a<wants.length;a++){
+			if(wants[a]){
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	// under-the-hood
@@ -183,6 +172,9 @@ public class City {
 	public boolean isDead(){
 		return age==-1;
 	}
+	public boolean isCapital(){
+		return leader.x==x && leader.y==y;
+	}
 	private int randomEnviron(){
 		if(territories.length==0){
 			return Game.world.get(x,y).environment;
@@ -197,10 +189,6 @@ public class City {
 			return;
 		}
 		for(int a=0;a<neighbors.size();a++){
-			//City neighbor=neighbors.get(a);
-			/*if(Game.world.get(neighbor.x,neighbor.y).city!=neighbor){
-				neighbors.remove(neighbor);
-			}else */
 			if(neighbors.get(a).leader==leader){
 				return;
 			}
@@ -212,10 +200,9 @@ public class City {
 			new Enemy(capital);
 			leader.periodOfWarringStates(capital);
 		}
-		//System.out.println("Chaos death!");
 	}
 	public void procreate(){
-		pop+=10;//(int)Math.ceil(pop/10.0)*(food-1);
+		pop+=10;
 		if(pop>300){
 			pop=300;
 		}
@@ -230,17 +217,6 @@ public class City {
 				}
 			}
 		}else{
-			/*for(int a=1;a<interest.length;a++){
-				if(!hasResource(interest[a])){
-					if(!appeased){
-						changeLoyalty(-1);
-						if(loyalty<=0){
-							rebel();
-						}
-					}
-					return;
-				}
-			}*/
 			for(int a=0;a<wants.length;a++){
 				if(wants[a]){
 					if(!appeased){
@@ -254,16 +230,11 @@ public class City {
 			}
 			culture.upgrade(interest);
 			interest=null;
-			//wants.clear();
-			//wants=new boolean[Tile.resources.length];
+			//System.out.println(wanted);
 		}
 	}
 	private void setNewInterest(){
-		//if(culture.skills.size()<=Math.ceil(Culture.MAX_SKILLS/2)){
-			interest=Game.skills.getEnvSkill(randomEnviron());
-		/*}else{
-			interest=Game.skills.randomSkill();
-		}*/
+		interest=Game.skills.getEnvSkill(randomEnviron());
 		setWants();
 	}
 	
@@ -289,7 +260,6 @@ public class City {
 		}
 		if(leader.cities.size()==1){
 			destroy();
-			//Game.enemies.remove(leader);
 		}
 	}
 	public Color getColor(){
@@ -301,12 +271,10 @@ public class City {
 	}
 	public void setTerritories(){
 		territories=territories(x,y);
-		//ArrayList<String> r=new ArrayList<>();
 		for(int a=0;a<territories.length;a++){
 			Tile tile=Game.world.get(territories[a][0],territories[a][1]);
 			tile.territory=new int[]{x,y};
 			if(tile.resource!=-1){
-				//r.add(tile.resource);
 				getResource(tile.resource);
 			}
 			int[][] s=Tile.surroundings(territories[a][0],territories[a][1]);
@@ -323,7 +291,6 @@ public class City {
 				}
 			}
 		}
-		//resources=r.toArray(new String[r.size()]);
 		interest=Game.skills.getEnvSkill(randomEnviron());
 		setWants();
 	}
