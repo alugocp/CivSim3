@@ -4,6 +4,7 @@ public class Player extends Leader{
 	private Player(int x,int y){
 		super(x,y);
 		Game.player=this;
+		Game.brain=new PlayerBrain(this);
 		cities.get(0).name="Alexandria";
 	}
 	public static void newPlayer(){
@@ -30,7 +31,7 @@ public class Player extends Leader{
 		Game.game.updateWants();
 		if(Game.enemies.size()==0){
 			Game.turn++;
-			System.out.println("You've conquered the world!");
+			System.out.println("You've conquered the world!\n");
 		}
 		if(cities.size()==0){
 			Game.turn++;

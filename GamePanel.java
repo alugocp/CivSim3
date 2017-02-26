@@ -52,7 +52,7 @@ public class GamePanel extends JPanel implements MouseListener,MouseMotionListen
 							g.drawString("!",0,0);
 						}
 						g.setColor(highlighted);
-						if((Game.histo.action==HistogramPanel.ATTACK || Game.histo.action==HistogramPanel.TRADE) && Game.histo.focus.neighbors.contains(tile.city)){
+						if((Game.histo.action==HistogramPanel.ATTACK || Game.histo.action==HistogramPanel.TRADE) && Game.histo.potential.contains(tile.city)){
 							g.fillPolygon(hex);
 						}
 					}
@@ -192,12 +192,14 @@ public class GamePanel extends JPanel implements MouseListener,MouseMotionListen
 	}
 	private void clicked(int x,int y){
 		Tile tile=Game.world.get(x,y);
-		if(Game.histo.action==HistogramPanel.TRADE && tile.city!=null && Game.histo.focus.neighbors.contains(tile.city)){
+		if(Game.histo.action==HistogramPanel.TRADE && tile.city!=null && Game.histo.potential.contains(tile.city)){
 			Game.histo.trade=new Trade(Game.histo.focus,tile.city);
 		}else{
-			if(Game.histo.action==HistogramPanel.ATTACK && tile.city!=null && Game.histo.focus.neighbors.contains(tile.city)){
+			if(Game.histo.action==HistogramPanel.ATTACK && tile.city!=null && Game.histo.potential.contains(tile.city)){
+				Game.brain.getDecision(Game.histo.focus,HistogramPanel.ATTACK,tile.city);
 				Game.histo.focus.attack(tile.city);
 			}else if(Game.histo.action==HistogramPanel.BUILD && Game.histo.hasBuildPoint(x,y)){
+				Game.brain.getDecision(Game.histo.focus,new int[]{x,y});
 				new City(Game.histo.focus,x,y);
 			}
 			Game.histo.changeFocus(x,y);

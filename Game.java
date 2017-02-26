@@ -3,7 +3,8 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public abstract class Game{
-	private static DecisionManager decisions;
+	static DecisionManager decisions;
+	static PlayerBrain brain;
 	static ArrayList<Enemy> enemies=new ArrayList<>();
 	static Skills skills=new Skills();
 	static Player player;
@@ -22,12 +23,16 @@ public abstract class Game{
 	static int turn;
 	private static int t=0;
 	public static void main(String[] args){
+		System.out.println("Welcome to CivSim 3.0!");
+		System.out.println("This program was developed by Alex Lugo");
+		System.out.println("To learn more about the developer, please visit https://alugocp.github.io/resume\n");
+		
 		// determine mode
-		Scanner sc=new Scanner(System.in);
 		System.out.print("Please select either player or sim mode: ");
+		Scanner sc=new Scanner(System.in);
 		String select=sc.nextLine();
 		while(!select.equals("player") && !select.equals("sim")){
-			System.out.println("Invalid response. Please try again.");
+			System.out.println("Invalid response, please try again.");
 			select=sc.nextLine();
 		}
 		if(select.equals("player")){
@@ -40,19 +45,19 @@ public abstract class Game{
 		sc.close();
 		
 		// initialize simulation
-		world=new World();
+		System.out.println("Initializing new simulation...");
+		if(mode==SIM){
+			world=new World(160,90);
+		}else{
+			world=new World(60,60);
+		}
 		world.setup();
-		new MainFrame(1200,600);
+		new MainFrame();
 		player.scrollTo();
 		if(mode==PLAYER){
 			player.turn();
 		}else{
 			simCycle();
-		}
-	}
-	public static void logDecision(/* decision inputs */){
-		if(decisions!=null){
-			// run function call
 		}
 	}
 	public static double distance(int[] first,int[] second){

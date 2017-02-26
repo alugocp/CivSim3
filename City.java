@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class City {
 	static final int MAX_LOYALTY=5;
-	int x,y,pop,loyalty;//,wanted;
+	int x,y,pop,loyalty;
 	ArrayList<City> neighbors=new ArrayList<>();
 	Culture culture=new Culture();
 	String name,interest;

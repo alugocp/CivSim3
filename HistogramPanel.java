@@ -24,6 +24,7 @@ public class HistogramPanel extends JPanel implements MouseListener{
 	int action=NONE;
 	Trade trade;
 	City focus;
+	ArrayList<City> potential=new ArrayList<>();
 	public HistogramPanel(int width,int height){
 		Game.histo=this;
 		setPreferredSize(new Dimension(width/2,height/4));
@@ -232,18 +233,17 @@ public class HistogramPanel extends JPanel implements MouseListener{
 				}else{
 					if(index==2){
 						action=ATTACK;
+						potential.clear();
+						potential.addAll(focus.neighbors);
 					}else if(index==1){
 						action=TRADE;
-						ArrayList<City> allies=focus.leader.cities;
-						for(int a=0;a<allies.size();a++){
-							if(allies.get(a)!=focus && !focus.neighbors.contains(allies.get(a))){
-								focus.neighbors.add(allies.get(a));
-							}
-						}
+						potential.clear();
+						potential.addAll(focus.leader.cities);
+						potential.addAll(focus.neighbors);
 					}
 					Game.redraw(true,false,false,false);
 				}
-			}else if(trade!=null){
+			}else if(trade!=null && trade.possible()){
 				if(event.getX()>=getWidth()/2){
 					int index=(int)Math.floor(event.getY()/25);
 					if(event.getX()<getWidth()*0.75 && index<trade.offers.length){
@@ -252,6 +252,7 @@ public class HistogramPanel extends JPanel implements MouseListener{
 						trade.selected1=index;
 					}
 				}else if(event.getX()<=105 && event.getY()>=110){
+					Game.brain.getDecision(focus,TRADE,trade.city1);
 					trade.trade();
 					changeFocus(trade.city1.x,trade.city1.y);
 					trade=null;

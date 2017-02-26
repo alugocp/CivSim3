@@ -11,8 +11,8 @@ public class World extends Hex2DArray{
 	static final int MOUNTAIN=5;
 	static final int COAST=6;
 	private final Random r=new Random();
-	public World(){
-		super(160,90);
+	public World(int width,int height){
+		super(width,height);
 		setDimensions(0,0,Game.xDis(),Game.yDis());
 	}
 	public void setup(){

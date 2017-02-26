@@ -9,9 +9,11 @@ public class MainFrame extends JFrame{//remember, use mouse listeners and positi
 	static final long serialVersionUID=1;
 	private JPanel game,culture,minimap,histogram;
 	
-	public MainFrame(int width,int height){
+	public MainFrame(){
 		setTitle("Alex Lugo's CivSim 3");
 		setResizable(false);
+		int width=1200;
+		int height=600;
 		
 		GridBagLayout g=new GridBagLayout();
 		g.columnWidths=new int[]{width};

@@ -6,9 +6,9 @@ public class Brain {
 	private static final int PLOT_VAR_LENGTH=Tile.resources.length+1;
 	private double[][][] citySynapses,neighborSynapses,allySynapses,plotSynapses;
 	private final Leader leader;
-	private int[][] neighbors,allies,plots;
+	protected int[][] neighbors,allies,plots;
+	protected int[] city;
 	private Option[][] options;
-	private int[] city;
 	private Option highest;
 	
 	public Brain(Leader leader){
@@ -125,12 +125,12 @@ public class Brain {
 		}*/
 		vars[Tile.resources.length*2]=city.loyalty;
 		vars[(Tile.resources.length*2)+1]=popIndex(city.pop);
-		if(city.neighbors.size()>19){
+		/*if(city.neighbors.size()>19){
 			Game.histo.changeFocus(city.x,city.y);
 			System.out.println("Error: neighbor count over 19: "+city.neighbors.size());
 			System.out.println("Caused by "+city.name);
 			System.out.println("Nation size: "+city.leader.cities.size());
-		}
+		}*/
 		int friends=0;
 		for(int a=0;a<city.neighbors.size();a++){
 			if(city.neighbors.get(a).leader==city.leader){
@@ -194,13 +194,18 @@ public class Brain {
 			synapses[b]=new double[]{randomSynapse()};
 		}
 		synapses[resLen]=new double[City.MAX_LOYALTY+1];
+		/* added today */
+		for(int b=0;b<synapses[resLen].length;b++){
+			synapses[resLen][b]=randomSynapse();
+		}
+		/* added today */
 		synapses[resLen+1]=new double[15];
-		for(int b=0;b<15;b++){
+		for(int b=0;b<synapses[resLen+1].length;b++){
 			synapses[resLen+1][b]=randomSynapse();
 		}
 		synapses[resLen+2]=new double[20];
 		synapses[resLen+3]=new double[20];
-		for(int b=0;b<12;b++){
+		for(int b=0;b<synapses[resLen+2].length;b++){
 			synapses[resLen+2][b]=randomSynapse();
 			synapses[resLen+3][b]=randomSynapse();
 		}
@@ -241,7 +246,7 @@ public class Brain {
 			new City(city,build.x,build.y);
 		}
 	}
-	private void addEffect(Option option,double[][] synapses,int[] vars){
+	protected void addEffect(Option option,double[][] synapses,int[] vars){
 		double effect=0;
 		for(int a=0;a<synapses.length;a++){
 			if(synapses[a].length==1){
@@ -255,7 +260,7 @@ public class Brain {
 		option.clout+=effect;
 	}
 	
-	private abstract class Option{
+	protected abstract class Option{
 		int clout;
 	}
 	private class AttackOption extends Option{
