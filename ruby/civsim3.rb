@@ -6,10 +6,11 @@ $resources=23
 $cityVarLength=($resources*2)+5
 $plotVarLength=$resources+1
 $maxLoyalty=5
-$step=0.001
+$step=0.1
 $rand=Random.new
 $decisions=[]
 $synapses=[]
+$guesses=[]
 
 # class declaration
 class Decision
@@ -18,6 +19,7 @@ class Decision
     File.open(file).each_with_index do |line,index|
       if index==0
         correct=line.split ","
+        correct=[correct[0].to_i,correct[1].to_i]
       else
         @data=eval(line)
       end
@@ -43,7 +45,20 @@ class Decision
     for a in 0...@data[3].length do
       @options.push [Option.new(self,1+@data[1].length+@data[2].length+a,0)]
     end
-    @options[correct[0].to_i][correct[1].to_i].setExpected 1
+    @options[correct[0]][correct[1]].setExpected 1
+  end
+
+  def isCorrect?
+    highest=[0,0]
+    for a in 0...options.length do
+      for b in 0...options[a].length do
+        if options[a][b].value>options[highest[0]][highest[1]].value
+          highest=[a,b]
+        end
+      end
+    end
+    return options[highest[0]][highest[1]].expected==1
+    #highest[0]==@correct[0] && highest[1]==@correct[1]
   end
 end
 class Option
@@ -106,7 +121,7 @@ class Option
 
   def addValue coefficients,synapses
     for a in 0...coefficients.length do
-      if synapses[a].length==1#kind_of? Array
+      if synapses[a].length==1
         @value+=coefficients[a]
       elsif
         @value+=coefficients[a]*synapses[a][0]
@@ -143,9 +158,12 @@ class Option
     for a in 0...@coefficients.length do
       list=[]
       for b in 0...@coefficients[a].length do
-        crude=sign*$step/@coefficients[a][b]
-        list.push crude
-        sum+=crude
+        crude=$step/@coefficients[a][b]
+        if @coefficients[a][b]==0
+          crude=0
+        end
+        list.push crude*sign
+        sum+=crude.abs
       end
       changes.push list
     end
@@ -176,6 +194,9 @@ class Option
       l=$synapses[syn][syn1][a].length
       for b in 0...l do
         $synapses[syn][syn1][a][b]+=changes[syn][a]*$step/(sum*l)
+	      #if syn==0 && syn1==0
+        #  puts changes[syn][a]*$step/(sum*l)
+        #end
       end
       #if $synapses[syn][syn1][a].length==1
       #  $synapses[syn][syn1][a][0]+=changes[syn][a]*$step/sum
@@ -240,7 +261,7 @@ def plotSynapses
 end
 
 def randSynapse
-  return $rand.rand 1.0
+  return $rand.rand(2.0)-1
 end
 
 def isCity index
@@ -268,6 +289,20 @@ def fitToDecision dec
       end
     end
   end
+  return dec.isCorrect?#logGuess dec.isCorrect?
+end
+def logGuess b
+  $guesses.push b
+  if $guesses.length>200
+    $guesses.slice! 0
+  end
+  total=0.0
+  for a in $guesses do
+    if a==true
+      total+=1
+    end
+  end
+  return total*100.0/$guesses.length
 end
 
 # initialization
@@ -283,6 +318,11 @@ randomBrain
 puts "Crude synapse network generated"
 puts "Initiating network development..."
 puts $synapses[0][0]
-fitToDecision $decisions[0]
-puts "-------------------------------------------------------------"
+a=1000#400
+while a>0 do
+  result=fitToDecision $decisions[0]
+  print "\r"+a.to_s+" loops remaining: "+logGuess(result).to_s+"% accurate"
+  a-=1
+end
+puts "\nAll done"
 puts $synapses[0][0]
