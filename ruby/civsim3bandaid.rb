@@ -8,6 +8,7 @@ $step=0.01
 $rand=Random.new
 $decisions=[]
 $synapses=[]
+$synSets=100
 $guesses=[]
 
 # class declaration
@@ -93,7 +94,7 @@ class Option
     return @value
   end
 
-  def cityCoefficients cities,syn,syn1
+  def cityCoefficients cities,syn,syn1,synIndex
     co=[]
     for a in 0...$synapses[syn][syn1].length do
       list=[]
@@ -111,9 +112,9 @@ class Option
       end
     end
     @coefficients.push co
-    addValue co,$synapses[syn][syn1]
+    addValue co,$synapses[syn][syn1],synIndex
   end
-  def plotCoefficients plots
+  def plotCoefficients plots,synIndex
     co=[]
     for a in 0...$synapses[3][0].length do
       list=[]
@@ -131,67 +132,67 @@ class Option
       end
     end
     @coefficients.push co
-    addValue co,$synapses[3][0]
+    addValue co,$synapses[3][0],synIndex
   end
 
-  def addValue coefficients,synapses
+  def addValue coefficients,synapses,synIndex
     for a in 0...coefficients.length do
       for b in 0...coefficients[a].length do
-        @value+=coefficients[a][b]*synapses[a][b]
+        @value+=coefficients[a][b]*synapses[a][b][synIndex]
       end
     end
   end
-  def recalcValue
+  def recalcValue synIndex
     @coefficients=[]
     @coefSum=0.0
     @value=0.0
     if @type==0
-      cityCoefficients @decision.data[0],0,0
+      cityCoefficients @decision.data[0],0,0,synIndex
     elsif @type==1
       if @secIndex==0
-        cityCoefficients @decision.data[0],0,1
-        cityCoefficients @decision.data[1],1,0
+        cityCoefficients @decision.data[0],0,1,synIndex
+        cityCoefficients @decision.data[1],1,0,synIndex
       else
-        cityCoefficients @decision.data[0],0,2
-        cityCoefficients @decision.data[1],1,1
+        cityCoefficients @decision.data[0],0,2,synIndex
+        cityCoefficients @decision.data[1],1,1,synIndex
       end
     elsif @type==2
-      cityCoefficients @decision.data[0],0,3
-      cityCoefficients @decision.data[1],1,2
-      cityCoefficients @decision.data[2],2,0
+      cityCoefficients @decision.data[0],0,3,synIndex
+      cityCoefficients @decision.data[1],1,2,synIndex
+      cityCoefficients @decision.data[2],2,0,synIndex
     else
-      cityCoefficients @decision.data[0],0,4
-      cityCoefficients @decision.data[1],1,3
-      cityCoefficients @decision.data[2],2,1
-      plotCoefficients @decision.data[3]
+      cityCoefficients @decision.data[0],0,4,synIndex
+      cityCoefficients @decision.data[1],1,3,synIndex
+      cityCoefficients @decision.data[2],2,1,synIndex
+      plotCoefficients @decision.data[3],synIndex
     end
   end
-  def changeSynapses sign
+  def changeSynapses sign,synIndex
     if @type==0
-      change sign,0,0
+      change sign,0,0,synIndex
     elsif @type==1
       if @secIndex==0
-        change sign,0,1
-        change sign,1,0
+        change sign,0,1,synIndex
+        change sign,1,0,synIndex
       else
-        change sign,0,2
-        change sign,1,1
+        change sign,0,2,synIndex
+        change sign,1,1,synIndex
       end
     elsif @type==2
-      change sign,0,3
-      change sign,1,2
-      change sign,2,0
+      change sign,0,3,synIndex
+      change sign,1,2,synIndex
+      change sign,2,0,synIndex
     else
-      change sign,0,4
-      change sign,1,3
-      change sign,2,1
-      change sign,3,0
+      change sign,0,4,synIndex
+      change sign,1,3,synIndex
+      change sign,2,1,synIndex
+      change sign,3,0,synIndex
     end
   end
-  def change sign,syn,syn1
+  def change sign,syn,syn1,synIndex
     for a in 0...$synapses[syn][syn1].length do
       for b in 0...$synapses[syn][syn1][a].length do
-        $synapses[syn][syn1][a][b]+=sign*$step*(@coefficients[syn][a][b]/Math.sqrt(@coefSum))
+        $synapses[syn][syn1][a][b][synIndex]+=sign*$step*(@coefficients[syn][a][b]/Math.sqrt(@coefSum))
       end
     end
   end
@@ -251,7 +252,11 @@ def plotSynapses
 end
 
 def randSynapse
-  return $rand.rand(0.02)-0.01
+  syn=[]
+  for a in 0...$synSets do
+    syn.push $rand.rand(0.02)-0.01
+  end
+  return syn
 end
 
 def isCity index
@@ -268,16 +273,22 @@ def isPlot data,index
 end
 
 def fitToDecision dec
+  synIndex=0
   for l in dec.options do
+    #synIndex=0
     for option in l do
-      option.recalcValue
+      option.recalcValue synIndex
       diff=option.expected-option.value
-      option.changeSynapses diff
+      option.changeSynapses diff/3,synIndex
       #if diff>0
-      #  option.changeSynapses 1
+      #  option.changeSynapses 1,synIndex
       #elsif diff<0
-      #  option.changeSynapses -1
+      #  option.changeSynapses -1,synIndex
       #end
+      synIndex+=1
+      if synIndex==$synSets
+        synIndex=0
+      end
     end
   end
   return dec.isCorrect?
@@ -307,16 +318,74 @@ puts "All "+$decisions.length.to_s+" decisions loaded"
 puts "Initiating brain generation..."
 randomBrain
 puts "Crude synapse network generated"
-puts "Initiating network development..."
-a=300
+puts "Initiating network development. Use ctrl+C to terminate."
+loopCount=0
 index=0
-while a>0 do
+percent=0
+while percent<95 do
   result=fitToDecision $decisions[index]
-  print "\r"+(a-1).to_s+" loops remaining: "+logGuess(result).to_s+"% accurate      "
-  a-=1
+  percent=logGuess(result)
+  print "\rloop #"+loopCount.to_s+": "+percent.to_s+"% accurate                 "
+  loopCount+=1
   index+=1
   if index>=$decisions.length
     index=0
   end
 end
-puts "\nAll done"
+
+def printCompletion index
+  print "\r"+index.to_s+"/"+$synapses.length.to_s+" completion..."
+end
+
+puts "\nNeural network development complete"
+puts "Converting brain to type string"
+
+brain="[\n"
+printCompletion 0
+for a in 0...$synapses.length do
+  brain+="[\n"
+  for b in 0...$synapses[a].length do
+    brain+="[\n"
+    for c in 0...$synapses[a][b].length do
+      brain+="[\n"
+      for d in 0...$synapses[a][b][c].length do
+        brain+="[\n"
+        for e in 0...$synapses[a][b][c][d].length do
+          brain+=$synapses[a][b][c][d][e].to_s+"\n"
+          #if e<$synapses[a][b][c][d].length-1
+          #  brain+=","
+          #end
+        end
+        brain+="]\n"
+        #if d<$synapses[a][b][c].length-1
+        #  brain+=","
+        #end
+        #brain+="\n"
+      end
+      brain+="]\n"
+      #if c<$synapses[a][b].length-1
+      #  brain+=","
+      #end
+      #brain+="\n"
+    end
+    brain+="]\n"
+    #if b<$synapses[a].length-1
+    #  brain+=","
+    #end
+    #brain+="\n"
+  end
+  brain+="]\n"
+  #if a<$synapses.length-1
+  #  brain+=","
+  #end
+  #brain+="\n"
+  printCompletion a+1
+end
+brain+="]"
+
+file=File.new "brains/"+ARGV[0]+".brain","w+"
+puts "\nWriting brain to file..."
+file.puts brain
+brain=""
+file.close
+puts "Brain file successfully written to file"
