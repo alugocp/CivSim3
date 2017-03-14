@@ -1,21 +1,18 @@
 package civsim3;
 import java.util.ArrayList;
 
-public class Brain {
+public class OldBrain {
 	static final int CITY_VAR_LENGTH=(Tile.resources.length*2)+5;
 	static final int PLOT_VAR_LENGTH=Tile.resources.length+1;
-	private double[][][][] citySynapses,neighborSynapses,allySynapses,plotSynapses;
+	private double[][][] citySynapses,neighborSynapses,allySynapses,plotSynapses;
 	private final Leader leader;
 	protected int[][] neighbors,allies,plots;
 	protected int[] city;
 	private Option[][] options;
 	private Option highest;
-	static final int synSets=100;
-	private int synIndex=0;
 	
-	public Brain(Leader leader){
-		//randomBrain();
-		copyBrain();
+	public OldBrain(Leader leader){
+		randomBrain();
 		this.leader=leader;
 	}
 	
@@ -87,11 +84,6 @@ public class Brain {
 				addEffect(options[optionStart+b][0],allySynapses[1],this.allies[a]);
 			}
 		}
-		
-		synIndex++;
-		if(synIndex==synSets){
-			synIndex=0;
-		}
 	}
 	
 	// information gathering
@@ -153,70 +145,60 @@ public class Brain {
 	}
 	
 	// brain setup
-	private double[] randomSynapse(){
-		double[] set=new double[synSets];
-		for(int a=0;a<set.length;a++){
-			set[a]=(Math.random()*0.02)-0.01;
-		}
-		//double decimal=(2*Math.random())-1;
-		return set;//Math.round(decimal*1000)/1000.0;
+	private double randomSynapse(){
+		double decimal=(2*Math.random())-1;
+		return Math.round(decimal*1000)/1000.0;
 	}
 	private void randomBrain(){
-		citySynapses=new double[5][CITY_VAR_LENGTH][][];
+		citySynapses=new double[5][CITY_VAR_LENGTH][];
 		citySynapses[0]=cityVarSynapses();
 		citySynapses[1]=cityVarSynapses();
 		citySynapses[2]=cityVarSynapses();
 		citySynapses[3]=cityVarSynapses();
 		citySynapses[4]=cityVarSynapses();
 		
-		neighborSynapses=new double[4][CITY_VAR_LENGTH][][];
+		neighborSynapses=new double[4][CITY_VAR_LENGTH][];
 		neighborSynapses[0]=cityVarSynapses();
 		neighborSynapses[1]=cityVarSynapses();
 		neighborSynapses[2]=cityVarSynapses();
 		neighborSynapses[3]=cityVarSynapses();
 		
-		allySynapses=new double[2][CITY_VAR_LENGTH][][];
+		allySynapses=new double[2][CITY_VAR_LENGTH][];
 		allySynapses[0]=cityVarSynapses();
 		allySynapses[1]=cityVarSynapses();
 		
-		plotSynapses=new double[1][PLOT_VAR_LENGTH][][];
+		plotSynapses=new double[1][PLOT_VAR_LENGTH][];
 		plotSynapses[0]=plotVarSynapses();
 	}
-	private void copyBrain(){
-		citySynapses=LoadBrain.brain[0];
-		neighborSynapses=LoadBrain.brain[1];
-		allySynapses=LoadBrain.brain[2];
-		plotSynapses=LoadBrain.brain[3];
-	}
-	private double[][][] cityVarSynapses(){
-		double[][][] synapses=new double[CITY_VAR_LENGTH][][];
+	private double[][] cityVarSynapses(){
+		double[][] synapses=new double[CITY_VAR_LENGTH][];
 		int resLen=Tile.resources.length*2;
 		for(int b=0;b<resLen;b++){
-			synapses[b]=new double[][]{randomSynapse()};
+			synapses[b]=new double[]{randomSynapse()};
 		}
-		synapses[resLen]=new double[City.MAX_LOYALTY+1][];
+		synapses[resLen]=new double[City.MAX_LOYALTY+1];
 		for(int b=0;b<synapses[resLen].length;b++){
 			synapses[resLen][b]=randomSynapse();
 		}
-		synapses[resLen+1]=new double[15][];
+		synapses[resLen+1]=new double[15];
 		for(int b=0;b<synapses[resLen+1].length;b++){
 			synapses[resLen+1][b]=randomSynapse();
 		}
-		synapses[resLen+2]=new double[20][];
-		synapses[resLen+3]=new double[20][];
+		synapses[resLen+2]=new double[20];
+		synapses[resLen+3]=new double[20];
 		for(int b=0;b<synapses[resLen+2].length;b++){
 			synapses[resLen+2][b]=randomSynapse();
 			synapses[resLen+3][b]=randomSynapse();
 		}
-		synapses[resLen+4]=new double[][]{randomSynapse(),randomSynapse()};
+		synapses[resLen+4]=new double[]{randomSynapse(),randomSynapse()};
 		return synapses;
 	}
-	private double[][][] plotVarSynapses(){
-		double[][][] synapses=new double[PLOT_VAR_LENGTH][][];
+	private double[][] plotVarSynapses(){
+		double[][] synapses=new double[PLOT_VAR_LENGTH][];
 		for(int a=0;a<Tile.resources.length;a++){
-			synapses[a]=new double[][]{randomSynapse()};
+			synapses[a]=new double[]{randomSynapse()};
 		}
-		synapses[Tile.resources.length]=new double[20][];
+		synapses[Tile.resources.length]=new double[20];
 		for(int a=0;a<20;a++){
 			synapses[Tile.resources.length][a]=randomSynapse();
 		}
@@ -245,16 +227,18 @@ public class Brain {
 			new City(city,build.x,build.y);
 		}
 	}
-	protected void addEffect(Option option,double[][][] synapses,int[] vars){
+	protected void addEffect(Option option,double[][] synapses,int[] vars){
+		//double effect=0;
 		for(int a=0;a<synapses.length;a++){
 			if(synapses[a].length==1){
 				if(vars[a]==1){
-					option.clout+=synapses[a][0][synIndex];
+					/*effect*/option.clout+=synapses[a][0];
 				}
 			}else{
-				option.clout+=synapses[a][vars[a]][synIndex];
+				/*effect*/option.clout+=synapses[a][vars[a]];
 			}
 		}
+		//option.clout+=effect;
 	}
 	
 	protected abstract class Option{

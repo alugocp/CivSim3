@@ -240,6 +240,7 @@ public class HistogramPanel extends JPanel implements MouseListener{
 						potential.clear();
 						potential.addAll(focus.leader.cities);
 						potential.addAll(focus.neighbors);
+						potential.remove(focus);
 					}
 					Game.redraw(true,false,false,false);
 				}

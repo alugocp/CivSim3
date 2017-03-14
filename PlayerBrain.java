@@ -27,6 +27,9 @@ public class PlayerBrain extends Brain{
 	}
 	
 	private int[] getOption(int action,City target){
+		if(c==target){
+			return new int[]{0,0};
+		}
 		int a=c.neighbors.indexOf(target);
 		if(a==-1){
 			ArrayList<City> allies=new ArrayList<>();
@@ -55,7 +58,7 @@ public class PlayerBrain extends Brain{
 	}
 	
 	@Override
-	protected void addEffect(Option option,double[][] synapses,int[] vars){
+	protected void addEffect(Option option,double[][][] synapses,int[] vars){
 		// does nothing for optimization
 	}
 }

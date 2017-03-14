@@ -43,6 +43,7 @@ public abstract class Game{
 			mode=SIM;
 		}
 		sc.close();
+		LoadBrain.setBrain();
 		
 		// initialize simulation
 		System.out.println("Initializing new simulation...");
